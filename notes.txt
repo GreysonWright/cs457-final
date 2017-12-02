@@ -1,0 +1,3 @@
+store fields by sysid in rbt
+key list of strings composed of all fields
+with ranged query sort key each time list by fields being searched for
