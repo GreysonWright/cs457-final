@@ -1,3 +1,15 @@
-store fields by sysid in rbt
-key list of strings composed of all fields
-with ranged query sort key each time list by fields being searched for
+interpretter:
+strstr() to find mode
+
+query:
+sort by field
+brute force find
+use sscanf to get field vals
+use strstr to find value in key
+if ranged query walk until reach top of range
+
+sort:
+sort in order from first to last field given
+
+insert:
+insert on back of darray
