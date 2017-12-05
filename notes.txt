@@ -1,8 +1,10 @@
 interpretter:
 strstr() to find mode
+change '=' to ":"
+use strtok
 
 query:
-sort by field
+sort by field on ranged query
 brute force find
 use sscanf to get field vals
 use strstr to find value in key
