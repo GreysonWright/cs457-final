@@ -17,5 +17,6 @@ Record *newRecord(char *);
 int compareRecord(void *, void *);
 void displayRecord(FILE *, void *);
 char *getRecord(Record *);
+void appendFieldRecord(Record *, char *);
 
 #endif /* Record_h */

@@ -32,3 +32,11 @@ void displayRecord(FILE *file, void *record) {
 char *getRecord(Record *record) {
 	return record->fields;
 }
+
+void appendFieldRecord(Record *record, char *keyValue) {
+	char *fields = malloc(strlen(keyValue) + strlen(record->fields) + 2);
+	strcpy(fields, keyValue);
+	strcat(fields, " ");
+	strcat(fields, record->fields);
+	record->fields = fields;
+}

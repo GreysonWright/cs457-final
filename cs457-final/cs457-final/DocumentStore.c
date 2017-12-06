@@ -20,16 +20,19 @@ DocumentStore *newDocumentStore(void (*display)(FILE *file, void *value)) {
 	return documentStore;
 }
 
-void insertDocumentStore(DocumentStore *documentStore, int docID) {
+Document *insertDocumentStore(DocumentStore *documentStore, int docID) {
 	int docIndex = getIndexDocumentStore(documentStore, docID);
+	Document *document = 0;
 	if (docIndex == -1) {
-		Document *newDoc = newDocument(docID, 1);
-		insertDArray(documentStore->store, newDoc);
+		document = newDocument(docID, 1);
+		insertDArray(documentStore->store, document);
 	} else {
-		Document *document = getDocumentStore(documentStore, docIndex);
+		document = getDocumentStore(documentStore, docIndex);
 		incrementCountDocument(document);
 		setDArray(documentStore->store, docIndex, document);
 	}
+	
+	return document;
 }
 
 int getIndexDocumentStore(DocumentStore *documentStore, int docID) {
