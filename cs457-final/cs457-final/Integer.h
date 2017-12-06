@@ -15,5 +15,7 @@ typedef struct INTEGER Integer;
 
 Integer *newInteger(int);
 Integer *nullInteger(void);
+int getInteger(Integer *);
+void setInteger(Integer *, int);
 
 #endif /* Integer_h */

@@ -12,6 +12,8 @@
 		2EF2FFCB1FD73BF200777C3E /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = 2EF2FFC91FD73BF200777C3E /* scanner.c */; };
 		2EF2FFCE1FD7426100777C3E /* Record.c in Sources */ = {isa = PBXBuildFile; fileRef = 2EF2FFCD1FD7426100777C3E /* Record.c */; };
 		2EF2FFD11FD742D300777C3E /* Integer.c in Sources */ = {isa = PBXBuildFile; fileRef = 2EF2FFD01FD742D300777C3E /* Integer.c */; };
+		2EF2FFDD1FD74C7000777C3E /* Document.c in Sources */ = {isa = PBXBuildFile; fileRef = 2EF2FFDC1FD74C7000777C3E /* Document.c */; };
+		2EF2FFE01FD7580800777C3E /* DocumentStore.c in Sources */ = {isa = PBXBuildFile; fileRef = 2EF2FFDF1FD7580800777C3E /* DocumentStore.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +39,10 @@
 		2EF2FFCD1FD7426100777C3E /* Record.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Record.c; sourceTree = "<group>"; };
 		2EF2FFCF1FD742D300777C3E /* Integer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Integer.h; sourceTree = "<group>"; };
 		2EF2FFD01FD742D300777C3E /* Integer.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Integer.c; sourceTree = "<group>"; };
+		2EF2FFDB1FD74C7000777C3E /* Document.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Document.h; sourceTree = "<group>"; };
+		2EF2FFDC1FD74C7000777C3E /* Document.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = Document.c; sourceTree = "<group>"; };
+		2EF2FFDE1FD7580800777C3E /* DocumentStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DocumentStore.h; sourceTree = "<group>"; };
+		2EF2FFDF1FD7580800777C3E /* DocumentStore.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = DocumentStore.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,6 +83,10 @@
 				2EF2FFCD1FD7426100777C3E /* Record.c */,
 				2EF2FFCF1FD742D300777C3E /* Integer.h */,
 				2EF2FFD01FD742D300777C3E /* Integer.c */,
+				2EF2FFDB1FD74C7000777C3E /* Document.h */,
+				2EF2FFDC1FD74C7000777C3E /* Document.c */,
+				2EF2FFDE1FD7580800777C3E /* DocumentStore.h */,
+				2EF2FFDF1FD7580800777C3E /* DocumentStore.c */,
 				2E9DC67C1FD34C5C0099333D /* final.c */,
 			);
 			path = "cs457-final";
@@ -141,8 +151,10 @@
 			files = (
 				2EF2FFD11FD742D300777C3E /* Integer.c in Sources */,
 				2EF2FFCE1FD7426100777C3E /* Record.c in Sources */,
+				2EF2FFE01FD7580800777C3E /* DocumentStore.c in Sources */,
 				2E9DC6881FD482090099333D /* darray.c in Sources */,
 				2EF2FFCB1FD73BF200777C3E /* scanner.c in Sources */,
+				2EF2FFDD1FD74C7000777C3E /* Document.c in Sources */,
 				2E9DC67D1FD34C5C0099333D /* final.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

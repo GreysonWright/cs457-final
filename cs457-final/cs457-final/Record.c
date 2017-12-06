@@ -7,6 +7,7 @@
 //
 
 #include <stdlib.h>
+#include <string.h>
 #include "Record.h"
 
 struct RECORD {
@@ -20,9 +21,7 @@ Record *newRecord(char *fields) {
 }
 
 int compareRecord(void *left, void *right) {
-	Record *leftRec = left;
-	Record *rightRec = right;
-	return strcmp(getRecord(leftRec), getRecord(right));
+	return strcmp(getRecord(left), getRecord(right));
 }
 
 void displayRecord(FILE *file, void *record) {

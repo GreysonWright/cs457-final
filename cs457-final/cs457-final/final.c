@@ -12,6 +12,7 @@
 #include "darray.h"
 #include "Record.h"
 #include "Integer.h"
+#include "Document.h"
 
 void insert(DArray *, char *);
 Integer *parse(char *, char *);
@@ -21,6 +22,7 @@ DArray *query(DArray *, char *);
 void writeResults(DArray *, char*);
 
 int main(int argc, const char * argv[]) {
+	DArray *documentStore = newDArray(0);
 	DArray *store = newDArray(displayRecord);
 	char *searchVal = "";
 	char *resultFields = "";

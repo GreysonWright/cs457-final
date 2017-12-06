@@ -14,8 +14,8 @@
 typedef struct RECORD Record;
 
 Record *newRecord(char *);
-int compareRecord(void *left, void *right);
-void displayRecord(FILE *file, void *record);
+int compareRecord(void *, void *);
+void displayRecord(FILE *, void *);
 char *getRecord(Record *);
 
 #endif /* Record_h */

@@ -27,3 +27,11 @@ Integer *nullInteger() {
 	return newInt;
 }
 
+int getInteger(Integer *integer) {
+	return integer->value;
+}
+
+void setInteger(Integer *integer, int value) {
+	integer->value = value;
+	integer->isNull = 0;
+}
