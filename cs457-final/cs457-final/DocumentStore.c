@@ -22,7 +22,7 @@ DocumentStore *newDocumentStore(void (*display)(FILE *file, void *value)) {
 
 void insertDocumentStore(DocumentStore *documentStore, int docID) {
 	int docIndex = getIndexDocumentStore(documentStore, docID);
-	if (docIndex != -1) {
+	if (docIndex == -1) {
 		Document *newDoc = newDocument(docID, 1);
 		insertDArray(documentStore->store, newDoc);
 	} else {
@@ -45,4 +45,12 @@ int getIndexDocumentStore(DocumentStore *documentStore, int docID) {
 
 Document *getDocumentStore(DocumentStore *documentStore, int index) {
 	return getDArray(documentStore->store, index);
+}
+
+int sizeDocumentStore(DocumentStore *documentStore) {
+	return sizeDArray(documentStore->store);
+}
+
+void displayDocumentStore(FILE *file, DocumentStore *documentStore) {
+	displayDArray(file, documentStore->store);
 }

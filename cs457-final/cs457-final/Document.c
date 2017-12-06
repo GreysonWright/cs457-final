@@ -10,14 +10,14 @@
 #include "Document.h"
 
 struct DOCUMENT {
-	int count;
 	int id;
+	int count;
 };
 
-Document *newDocument(int count, int id) {
+Document *newDocument(int id, int count) {
 	Document *newDoc = malloc(sizeof *newDoc);
-	newDoc->count = count;
 	newDoc->id = id;
+	newDoc->count = count;
 	return newDoc;
 }
 
@@ -35,4 +35,8 @@ void setCountDocument(Document *document, int value) {
 
 void incrementCountDocument(Document *document) {
 	document->count++;
+}
+
+void displayDocument(FILE *file, void *document) {
+	fprintf(file, "id: %d, count: %d", getIDDocument(document), getCountDocument(document));
 }

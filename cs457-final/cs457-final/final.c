@@ -23,7 +23,6 @@ DArray *query(DArray *, char *);
 void writeResults(DArray *, char*);
 
 int main(int argc, const char * argv[]) {
-	DArray *documentStore = newDArray(0);
 	DArray *store = newDArray(displayRecord);
 	char *searchVal = "";
 	char *resultFields = "";

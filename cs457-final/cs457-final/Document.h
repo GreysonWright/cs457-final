@@ -19,5 +19,6 @@ int getCountDocument(Document *);
 int getIDDocument(Document *);
 void setCountDocument(Document *, int);
 void incrementCountDocument(Document *);
+void displayDocument(FILE *, void *);
 
 #endif /* Document_h */
