@@ -96,7 +96,27 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 
 DArray *rangedQuery(DataBase *dataBase, char *query) {
 	DArray *resultArray = newDArray(dataBase->display);
-	if (strstr(query, "<")) {
+	if (strstr(query, "<=")) {
+		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+			Record *record = getDArray(dataBase->store, i);
+			char *queryKeyValue = flattenRange(query);
+			char *queryKey = getKey(queryKeyValue);
+			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
+			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0) {
+				insertDArray(resultArray, record);
+			}
+		}
+	} else if (strstr(query, ">=")) {
+		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+			Record *record = getDArray(dataBase->store, i);
+			char *queryKeyValue = flattenRange(query);
+			char *queryKey = getKey(queryKeyValue);
+			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
+			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0) {
+				insertDArray(resultArray, record);
+			}
+		}
+	} else if (strstr(query, "<")) {
 		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
 			Record *record = getDArray(dataBase->store, i);
 			char *queryKeyValue = flattenRange(query);
@@ -122,10 +142,12 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 
 char *flattenRange(char *source) {
 	char *keyValue = malloc(strlen(source));
-	strcpy(keyValue, source);
+	int count = 0;
 	for (int i = 0; i < strlen(source); i++) {
-		if (keyValue[i] == '>' || keyValue[i] == '<') {
-			keyValue[i] = ':';
+		if (source[i] == '>' || source[i] == '<') {
+			keyValue[count++] = ':';
+		} else if (source[i] != '=') {
+			keyValue[count++] = source[i];
 		}
 	}
 	return keyValue;

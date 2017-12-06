@@ -15,3 +15,7 @@ sort in order from first to last field given
 
 insert:
 insert on back of darray
+
+and query:
+query for each induvidual fields and then remove duplicates with sysid
+use basic query maybe
