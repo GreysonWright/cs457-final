@@ -6,12 +6,19 @@
 //  Copyright © 2017 Greyson Wright. All rights reserved.
 //
 
+#include <stdlib.h>
 #include "Document.h"
 #include "DocumentStore.h"
 
 struct DOCUMENTSTORE {
 	DArray *store;
 };
+
+DocumentStore *newDocumentStore(void (*display)(FILE *file, void *value)) {
+	DocumentStore *documentStore = malloc(sizeof *documentStore);
+	documentStore->store = newDArray(display);
+	return documentStore;
+}
 
 void insertDocumentStore(DocumentStore *documentStore, int docID) {
 	int docIndex = getIndexDocumentStore(documentStore, docID);

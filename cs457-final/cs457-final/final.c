@@ -13,6 +13,7 @@
 #include "Record.h"
 #include "Integer.h"
 #include "Document.h"
+#include "DocumentStore.h"
 
 void insert(DArray *, char *);
 Integer *parse(char *, char *);

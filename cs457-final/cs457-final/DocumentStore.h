@@ -15,6 +15,7 @@
 
 typedef struct DOCUMENTSTORE DocumentStore;
 
+DocumentStore *newDocumentStore(void (*)(FILE *, void *));
 void insertDocument(DocumentStore *, int);
 int getIndexDocumentStore(DocumentStore *, int);
 Document *getDocumentStore(DocumentStore *, int);
