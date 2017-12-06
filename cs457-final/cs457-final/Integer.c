@@ -7,6 +7,7 @@
 //
 
 #include <stdlib.h>
+#include <string.h>
 #include "Integer.h"
 
 struct INTEGER {
@@ -34,4 +35,22 @@ int getInteger(Integer *integer) {
 void setInteger(Integer *integer, int value) {
 	integer->value = value;
 	integer->isNull = 0;
+}
+
+Integer *parseInteger(char *source, char *key) {
+	char *token = malloc(strlen(source));
+	strcpy(token, source);
+	
+	char *pkey = strtok(token, ":");
+	char *pval = strtok(0, " ");
+	
+	while (pkey) {
+		if (strcmp(pkey, key) == 0) {
+			return newInteger(atoi(pval));
+		}
+		pkey = strtok(0, ":");
+		pval = strtok(0, " ");
+	}
+	
+	return nullInteger();
 }

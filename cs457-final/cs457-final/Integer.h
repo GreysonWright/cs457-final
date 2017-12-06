@@ -17,5 +17,6 @@ Integer *newInteger(int);
 Integer *nullInteger(void);
 int getInteger(Integer *);
 void setInteger(Integer *, int);
+Integer *parseInteger(char *, char *);
 
 #endif /* Integer_h */

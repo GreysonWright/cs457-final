@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2E7415C01FD87F0F0015ACD9 /* DataBase.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E7415BF1FD87F0F0015ACD9 /* DataBase.c */; };
 		2E9DC67D1FD34C5C0099333D /* final.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E9DC67C1FD34C5C0099333D /* final.c */; };
 		2E9DC6881FD482090099333D /* darray.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E9DC6871FD482090099333D /* darray.c */; };
 		2EF2FFCB1FD73BF200777C3E /* scanner.c in Sources */ = {isa = PBXBuildFile; fileRef = 2EF2FFC91FD73BF200777C3E /* scanner.c */; };
@@ -29,6 +30,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2E7415BE1FD87F0F0015ACD9 /* DataBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataBase.h; sourceTree = "<group>"; };
+		2E7415BF1FD87F0F0015ACD9 /* DataBase.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = DataBase.c; sourceTree = "<group>"; };
 		2E9DC6791FD34C5C0099333D /* cs457-final */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cs457-final"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E9DC67C1FD34C5C0099333D /* final.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = final.c; sourceTree = "<group>"; };
 		2E9DC6861FD482090099333D /* darray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = darray.h; sourceTree = "<group>"; };
@@ -87,6 +90,8 @@
 				2EF2FFDC1FD74C7000777C3E /* Document.c */,
 				2EF2FFDE1FD7580800777C3E /* DocumentStore.h */,
 				2EF2FFDF1FD7580800777C3E /* DocumentStore.c */,
+				2E7415BE1FD87F0F0015ACD9 /* DataBase.h */,
+				2E7415BF1FD87F0F0015ACD9 /* DataBase.c */,
 				2E9DC67C1FD34C5C0099333D /* final.c */,
 			);
 			path = "cs457-final";
@@ -149,6 +154,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E7415C01FD87F0F0015ACD9 /* DataBase.c in Sources */,
 				2EF2FFD11FD742D300777C3E /* Integer.c in Sources */,
 				2EF2FFCE1FD7426100777C3E /* Record.c in Sources */,
 				2EF2FFE01FD7580800777C3E /* DocumentStore.c in Sources */,
