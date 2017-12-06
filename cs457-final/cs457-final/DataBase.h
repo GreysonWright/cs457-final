@@ -16,8 +16,6 @@ typedef struct DATABASE DataBase;
 
 DataBase *newDataBase(void (*)(FILE *, void *));
 void insertDataBase(DataBase *, char *);
-DArray *andQueryDataBase(DataBase *darray, char *searchVal);
-DArray *rangedQueryDataBase(DataBase *, char *);
 DArray *queryDataBase(DataBase *, char *);
 void displayDataBase(FILE *, DataBase *);
 

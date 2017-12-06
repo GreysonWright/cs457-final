@@ -23,6 +23,15 @@ struct DATABASE {
 
 char *buildKeyValuePair(char *, int);
 int countIntegers(int);
+int isRangedQuery(char *);
+int isAndQuery(char *);
+char *flattenRange(char *);
+char *getKey(char *);
+char *findKeyValue(char *, char *);
+DArray *splitFields(Record *record);
+DArray *andQuery(DataBase *darray, char *searchVal);
+DArray *rangedQuery(DataBase *, char *);
+DArray *basicQuery(DataBase *, char*);
 
 DataBase *newDataBase(void (*display)(FILE *file, void *value)) {
 	DataBase *dataBase = malloc(sizeof *dataBase);
@@ -59,27 +68,98 @@ int countIntegers(int value) {
 	return 1 + countIntegers(value / 10);
 }
 
-DArray *andQueryDataBase(DataBase *dataBase, char *searchVal) {
-	DArray *resultArray = newDArray(0);
+DArray *queryDataBase(DataBase *dataBase, char *query) {
+	if (isRangedQuery(query) && isAndQuery(query)) {
+		return 0; //******
+	}
+	if (isRangedQuery(query)) {
+		return rangedQuery(dataBase, query);
+	}
+	if (isAndQuery(query)) {
+		return andQuery(dataBase, query);
+	}
+	return basicQuery(dataBase, query);
+}
+
+int isRangedQuery(char *query) {
+	return strstr(query, ">") || strstr(query, "<");
+}
+
+int isAndQuery(char *query) {
+	return strstr(query, ",") != 0;
+}
+
+DArray *andQuery(DataBase *dataBase, char *query) {
+	DArray *resultArray = newDArray(dataBase->display);
 	return resultArray;
 }
 
-DArray *rangedQueryDataBase(DataBase *dataBase, char *searchVal) {
-	DArray *resultArray = newDArray(0);
-	//	for (int i = 0; i < sizeDArray(darray); i++) {
-	//		Record *record = getDArray(darray, i);
-	//		if (strstr(record->fields, searchVal)) {
-	//			insertDArray(resultArray, record);
-	//		}
-	//	}
+DArray *rangedQuery(DataBase *dataBase, char *query) {
+	DArray *resultArray = newDArray(dataBase->display);
+	if (strstr(query, "<")) {
+		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+			Record *record = getDArray(dataBase->store, i);
+			char *queryKeyValue = flattenRange(query);
+			char *queryKey = getKey(queryKeyValue);
+			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
+			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0) {
+				insertDArray(resultArray, record);
+			}
+		}
+	} else {
+		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+			Record *record = getDArray(dataBase->store, i);
+			char *queryKeyValue = flattenRange(query);
+			char *queryKey = getKey(queryKeyValue);
+			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
+			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0) {
+				insertDArray(resultArray, record);
+			}
+		}
+	}
 	return resultArray;
 }
 
-DArray *queryDataBase(DataBase *dataBase, char *searchVal) {
+char *flattenRange(char *source) {
+	char *keyValue = malloc(strlen(source));
+	strcpy(keyValue, source);
+	for (int i = 0; i < strlen(source); i++) {
+		if (keyValue[i] == '>' || keyValue[i] == '<') {
+			keyValue[i] = ':';
+		}
+	}
+	return keyValue;
+}
+
+char *getKey(char *source) {
+	char *token = malloc(strlen(source));
+	strcpy(token, source);
+	
+	char *key = strtok(token, ":");
+	return key;
+}
+
+char *findKeyValue(char *source, char *key) {
+	char *token = malloc(strlen(source));
+	strcpy(token, source);
+	
+	char *keyValue = strtok(token, " ");
+	
+	while (keyValue) {
+		if (strstr(keyValue, key)) {
+			return keyValue;
+		}
+		keyValue = strtok(0, " ");
+	}
+	
+	return 0;
+}
+
+DArray *basicQuery(DataBase *dataBase, char *query) {
 	DArray *resultArray = newDArray(dataBase->display);
 	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
 		Record *record = getDArray(dataBase->store, i);
-		if (strstr(getRecord(record), searchVal)) {
+		if (strstr(getRecord(record), query)) {
 			insertDArray(resultArray, record);
 		}
 	}

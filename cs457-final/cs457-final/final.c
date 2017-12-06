@@ -12,6 +12,7 @@
 #include "DataBase.h"
 #include "Record.h"
 #include "darray.h"
+#include "Integer.h"
 
 int main(int argc, const char * argv[]) {
 	char *searchVal = "";
@@ -20,11 +21,8 @@ int main(int argc, const char * argv[]) {
 	insertDataBase(dataBase, "DocID:1 test:1");
 	insertDataBase(dataBase, "DocID:1 test:2");
 	insertDataBase(dataBase, "DocID:2 test:2");
-	DArray *results = queryDataBase(dataBase, "test:2");
+	DArray *results = queryDataBase(dataBase, "test>1");
 	displayDArray(stdout, results);
-//	displayDataBase(stdout, dataBase);
-//	DArray *results = query(store, searchVal);
-//	writeResults(results, resultFields);
 	printf("\n");
 	return 0;
 }

@@ -41,16 +41,25 @@ Integer *parseInteger(char *source, char *key) {
 	char *token = malloc(strlen(source));
 	strcpy(token, source);
 	
-	char *pkey = strtok(token, ":");
+	char *pkey = strtok(token, ":><");
 	char *pval = strtok(0, " ");
 	
 	while (pkey) {
 		if (strcmp(pkey, key) == 0) {
 			return newInteger(atoi(pval));
 		}
-		pkey = strtok(0, ":");
+		pkey = strtok(0, ":><");
 		pval = strtok(0, " ");
 	}
 	
 	return nullInteger();
+}
+
+void displayInteger(FILE *file, void *integer) {
+	Integer *i = integer;
+	if (i->isNull) {
+		fprintf(file, "nil");
+	} else {
+		fprintf(file, "%d", getInteger(i));
+	}
 }
