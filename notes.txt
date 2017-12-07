@@ -18,3 +18,5 @@ insert on back of darray
 
 and query:
 for each field check if is ranged or not use basic query or ranged query
+
+support <> in queries and only display unique docids unless otherwise specified with vn
