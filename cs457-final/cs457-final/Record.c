@@ -11,11 +11,13 @@
 #include "Record.h"
 
 struct RECORD {
+	int isDuplicate;
 	char *fields;
 };
 
 Record *newRecord(char *fields) {
 	Record *record = malloc(sizeof *record);
+	record->isDuplicate = 0;
 	record->fields = fields;
 	return record;
 }
@@ -33,10 +35,18 @@ char *getRecord(Record *record) {
 	return record->fields;
 }
 
+int getIsDuplicateRecord(Record *record) {
+	return record->isDuplicate;
+}
+
 void appendFieldRecord(Record *record, char *keyValue) {
 	char *fields = malloc(strlen(keyValue) + strlen(record->fields) + 2);
 	strcpy(fields, keyValue);
 	strcat(fields, " ");
 	strcat(fields, record->fields);
 	record->fields = fields;
+}
+
+void markAsDuplicateRecord(Record *record) {
+	record->isDuplicate = 1;
 }

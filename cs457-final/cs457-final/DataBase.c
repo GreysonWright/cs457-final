@@ -26,6 +26,7 @@ int countIntegers(int);
 int isRangedQuery(char *);
 int isAndQuery(char *);
 DArray *separateQueries(char *source);
+int doesDarrayContainKeyValue(DArray *, char *);
 char *convertToKeyValue(char *source);
 char *flattenRange(char *);
 char *getKey(char *);
@@ -109,7 +110,29 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 		}
 	}
 	
-	return resultArray;
+	for (int i = 0; i < sizeDArray(resultArray); i++) {
+		Record *iRecord = getDArray(resultArray, i);
+		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
+		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
+			Record *jRecord = getDArray(resultArray, j);
+			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
+			printf("i:%d j:%d\n", getInteger(isysID), getInteger(jsysID));
+			if (compareInteger(isysID, jsysID) == 0 && j != i) {
+				markAsDuplicateRecord(jRecord);
+			}
+		}
+	}
+	
+	DArray *newResultArray = newDArray(dataBase->display);
+	for (int i = 0; i < sizeDArray(resultArray); i++) {
+		Record *record = getDArray(resultArray, i);
+		char *keyValue = findKeyValue(getRecord(record), "sysid");
+		if (getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
+			insertDArray(newResultArray, record);
+		}
+	}
+	
+	return newResultArray;
 }
 
 DArray *separateQueries(char *source) {
@@ -124,6 +147,16 @@ DArray *separateQueries(char *source) {
 	}
 	
 	return resultArray;
+}
+
+int doesDarrayContainKeyValue(DArray *darray, char *keyValue) {
+	for (int i = 0; i < sizeDArray(darray); i++) {
+		Record *record = getDArray(darray, i);
+		if (strstr(getRecord(record), keyValue)) {
+			return 1;
+		}
+	}
+	return 0;
 }
 
 char *convertToKeyValue(char *source) {
@@ -147,7 +180,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0) {
+			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0)) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -157,7 +190,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0) {
+			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0)) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -167,7 +200,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0) {
+			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0)) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -177,7 +210,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0) {
+			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0)) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -226,7 +259,8 @@ DArray *basicQuery(DataBase *dataBase, char *query) {
 	DArray *resultArray = newDArray(dataBase->display);
 	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
 		Record *record = getDArray(dataBase->store, i);
-		if (strstr(getRecord(record), query)) {
+		char *key = getKey(query);
+		if (strstr(getRecord(record), query) || strstr(getRecord(record), key) == 0) {
 			insertDArray(resultArray, record);
 		}
 	}

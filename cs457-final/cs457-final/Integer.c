@@ -55,6 +55,10 @@ Integer *parseInteger(char *source, char *key) {
 	return nullInteger();
 }
 
+int compareInteger(void *right, void *left) {
+	return getInteger(right) - getInteger(left);
+}
+
 void displayInteger(FILE *file, void *integer) {
 	Integer *i = integer;
 	if (i->isNull) {

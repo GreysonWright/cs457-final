@@ -21,7 +21,7 @@ int main(int argc, const char * argv[]) {
 	insertDataBase(dataBase, "DocID:1 test:1 a:0");
 	insertDataBase(dataBase, "DocID:1 test:2 a:1");
 	insertDataBase(dataBase, "DocID:2 test:2");
-	DArray *results = queryDataBase(dataBase, "test>=1,DocID=1");
+	DArray *results = queryDataBase(dataBase, "a<1,test:2");
 	displayDArray(stdout, results);
 	printf("\n");
 	return 0;

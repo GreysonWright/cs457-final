@@ -17,6 +17,8 @@ Record *newRecord(char *);
 int compareRecord(void *, void *);
 void displayRecord(FILE *, void *);
 char *getRecord(Record *);
+int getIsDuplicateRecord(Record *);
 void appendFieldRecord(Record *, char *);
+void markAsDuplicateRecord(Record *);
 
 #endif /* Record_h */

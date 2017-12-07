@@ -18,6 +18,7 @@ Integer *nullInteger(void);
 int getInteger(Integer *);
 void setInteger(Integer *, int);
 Integer *parseInteger(char *, char *);
+int compareInteger(void *, void *);
 void displayInteger(FILE *, void *);
 
 #endif /* Integer_h */
