@@ -116,7 +116,6 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
 			Record *jRecord = getDArray(resultArray, j);
 			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
-			printf("i:%d j:%d\n", getInteger(isysID), getInteger(jsysID));
 			if (compareInteger(isysID, jsysID) == 0 && j != i) {
 				markAsDuplicateRecord(jRecord);
 			}
@@ -270,6 +269,29 @@ DArray *basicQuery(DataBase *dataBase, char *query) {
 int countDataBase(DataBase *dataBase, char *query) {
 	DArray *resultsArray = basicQuery(dataBase, query);
 	return sizeDArray(resultsArray);
+}
+
+void swap(void *left, void *right) {
+	void *temp = left;
+	left = right;
+	right = temp;
+}
+
+DArray *sortDataBase(DataBase *dataBase, char *field) {
+	DArray *resultsArray = basicQuery(dataBase, field);
+	for (int i = 0; i < sizeDArray(resultsArray) - 1; i++) {
+		for (int j = 0; j < sizeDArray(resultsArray) - i - 1; j++) {
+			Record *currentRecord = getDArray(resultsArray, j);
+			Integer *currentValue = parseInteger(getRecord(currentRecord), field);
+			Record *nextRecord = getDArray(resultsArray, j + 1);
+			Integer *nextValue = parseInteger(getRecord(nextRecord), field);
+			if (compareInteger(nextValue, currentValue) > 0) {
+				setDArray(resultsArray, j, nextRecord);
+				setDArray(resultsArray, j + 1, currentRecord);
+			}
+		}
+	}
+	return resultsArray;
 }
 
 void displayDataBase(FILE *outFile, DataBase *dataBase) {

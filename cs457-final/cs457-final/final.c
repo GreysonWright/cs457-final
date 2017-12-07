@@ -19,9 +19,12 @@ int main(int argc, const char * argv[]) {
 	char *resultFields = "";
 	DataBase *dataBase = newDataBase(displayRecord);
 	insertDataBase(dataBase, "DocID:1 test:1 a:0");
-	insertDataBase(dataBase, "DocID:1 test:2 a:1");
 	insertDataBase(dataBase, "DocID:2 test:2");
-	DArray *results = queryDataBase(dataBase, "a<1,test:2");
+	insertDataBase(dataBase, "DocID:1 test:2 a:1");
+	insertDataBase(dataBase, "DocID:0 test:2");
+	insertDataBase(dataBase, "DocID:3 test:2");
+	insertDataBase(dataBase, "DocID:2 test:2");
+	DArray *results = sortDataBase(dataBase, "DocID");
 	displayDArray(stdout, results);
 	printf("\n");
 	return 0;

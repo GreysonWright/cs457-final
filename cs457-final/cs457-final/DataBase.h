@@ -18,6 +18,7 @@ DataBase *newDataBase(void (*)(FILE *, void *));
 void insertDataBase(DataBase *, char *);
 DArray *queryDataBase(DataBase *, char *);
 int countDataBase(DataBase *, char *);
+DArray *sortDataBase(DataBase *, char *);
 void displayDataBase(FILE *, DataBase *);
 
 #endif /* DataBase_h */
