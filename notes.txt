@@ -17,5 +17,4 @@ insert:
 insert on back of darray
 
 and query:
-query for each induvidual fields and then remove duplicates with sysid
-use basic query maybe
+for each field check if is ranged or not use basic query or ranged query

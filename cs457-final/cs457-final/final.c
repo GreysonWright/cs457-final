@@ -18,10 +18,10 @@ int main(int argc, const char * argv[]) {
 	char *searchVal = "";
 	char *resultFields = "";
 	DataBase *dataBase = newDataBase(displayRecord);
-	insertDataBase(dataBase, "DocID:1 test:1");
-	insertDataBase(dataBase, "DocID:1 test:2");
+	insertDataBase(dataBase, "DocID:1 test:1 a:0");
+	insertDataBase(dataBase, "DocID:1 test:2 a:1");
 	insertDataBase(dataBase, "DocID:2 test:2");
-	DArray *results = queryDataBase(dataBase, "test>=1");
+	DArray *results = queryDataBase(dataBase, "test>=1,DocID=1");
 	displayDArray(stdout, results);
 	printf("\n");
 	return 0;

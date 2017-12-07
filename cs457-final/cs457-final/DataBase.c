@@ -25,6 +25,8 @@ char *buildKeyValuePair(char *, int);
 int countIntegers(int);
 int isRangedQuery(char *);
 int isAndQuery(char *);
+DArray *separateQueries(char *source);
+char *convertToKeyValue(char *source);
 char *flattenRange(char *);
 char *getKey(char *);
 char *findKeyValue(char *, char *);
@@ -69,14 +71,11 @@ int countIntegers(int value) {
 }
 
 DArray *queryDataBase(DataBase *dataBase, char *query) {
-	if (isRangedQuery(query) && isAndQuery(query)) {
-		return 0; //******
+	if (isAndQuery(query)) {
+		return andQuery(dataBase, query);
 	}
 	if (isRangedQuery(query)) {
 		return rangedQuery(dataBase, query);
-	}
-	if (isAndQuery(query)) {
-		return andQuery(dataBase, query);
 	}
 	return basicQuery(dataBase, query);
 }
@@ -91,7 +90,53 @@ int isAndQuery(char *query) {
 
 DArray *andQuery(DataBase *dataBase, char *query) {
 	DArray *resultArray = newDArray(dataBase->display);
+	char *token = malloc(strlen(query));
+	strcpy(token, query);
+	
+	DArray *keyValues = separateQueries(query);
+	for (int i = 0; i < sizeDArray(keyValues); i++) {
+		char *keyValue = getDArray(keyValues, i);
+		DArray *tmp = newDArray(dataBase->display);
+		if (isRangedQuery(keyValue)) {
+			tmp = rangedQuery(dataBase, keyValue);
+		} else {
+			keyValue = convertToKeyValue(keyValue);
+			tmp = basicQuery(dataBase, keyValue);
+		}
+		
+		for (int i = 0; i < sizeDArray(tmp); i++) {
+			insertDArray(resultArray, getDArray(tmp, i));
+		}
+	}
+	
 	return resultArray;
+}
+
+DArray *separateQueries(char *source) {
+	char *token = malloc(strlen(source));
+	strcpy(token, source);
+	
+	DArray *resultArray = newDArray(0);
+	char *keyValue = strtok(token, ",");
+	while (keyValue) {
+		insertDArray(resultArray, keyValue);
+		keyValue = strtok(0, ",");
+	}
+	
+	return resultArray;
+}
+
+char *convertToKeyValue(char *source) {
+	char *keyValue = malloc(strlen(source));
+	int count = 0;
+	for (int i = 0; i < strlen(source); i++) {
+		if (source[i] == '=') {
+			keyValue[count++] = ':';
+		} else {
+			keyValue[count++] = source[i];
+		}
+	}
+	return keyValue;
 }
 
 DArray *rangedQuery(DataBase *dataBase, char *query) {
@@ -186,6 +231,11 @@ DArray *basicQuery(DataBase *dataBase, char *query) {
 		}
 	}
 	return resultArray;
+}
+
+int countDataBase(DataBase *dataBase, char *query) {
+	DArray *resultsArray = basicQuery(dataBase, query);
+	return sizeDArray(resultsArray);
 }
 
 void displayDataBase(FILE *outFile, DataBase *dataBase) {
