@@ -34,7 +34,9 @@ char *findKeyValue(char *, char *);
 char *stripNotEqualOp(char *);
 int min(int, int);
 void sortDarray(DArray *, char *);
+DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
 DArray *searchDataBase(DataBase *, char *);
+DArray *searchDarray(DArray *, char *query, void (*)(FILE *, void *));
 DArray *splitFields(Record *);
 DArray *andQuery(DataBase *, char *);
 DArray *rangedQuery(DataBase *, char *);
@@ -75,14 +77,21 @@ int countIntegers(int value) {
 	return 1 + countIntegers(value / 10);
 }
 
-DArray *queryDataBase(DataBase *dataBase, char *query) {
+DArray *queryDataBase(DataBase *dataBase, char *query, int version) {
+	DArray *results = 0;
 	if (isAndQuery(query)) {
-		return andQuery(dataBase, query);
+		results = andQuery(dataBase, query);
 	}
 	if (isRangedQuery(query)) {
-		return rangedQuery(dataBase, query);
+		results = rangedQuery(dataBase, query);
 	}
-	return basicQuery(dataBase, query);
+	results = basicQuery(dataBase, query);
+	
+	if (version > 0) {
+		results = filterVersion(results, dataBase->documentStore, version, dataBase->display);
+	}
+	sortDarray(results, "vn");
+	return results;
 }
 
 int isRangedQuery(char *query) {
@@ -312,9 +321,14 @@ int countDataBase(DataBase *dataBase, char *query, int version) {
 }
 
 DArray *searchDataBase(DataBase *dataBase, char *query) {
-	DArray *resultArray = newDArray(dataBase->display);
-	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
-		Record *record = getDArray(dataBase->store, i);
+	DArray *resultArray = searchDarray(dataBase->store, query, dataBase->display);
+	return resultArray;
+}
+
+DArray *searchDarray(DArray *darray, char *query, void (*display)(FILE *, void *)) {
+	DArray *resultArray = newDArray(display);
+	for (int i = 0; i < sizeDArray(darray); i++) {
+		Record *record = getDArray(darray, i);
 		if (strstr(getRecord(record), query)) {
 			insertDArray(resultArray, record);
 		}
@@ -326,8 +340,11 @@ int min(int a, int b) {
 	return a < b ? a : b;
 }
 
-DArray *sortDataBase(DataBase *dataBase, char *field) {
+DArray *sortDataBase(DataBase *dataBase, char *field, int version) {
 	DArray *resultsArray = searchDataBase(dataBase, field);
+	if (version > 0) {
+		resultsArray = filterVersion(resultsArray, dataBase->documentStore, version, dataBase->display);
+	}
 	sortDarray(resultsArray, field);
 	return resultsArray;
 }
@@ -345,6 +362,22 @@ void sortDarray(DArray *darray, char *field) {
 			}
 		}
 	}
+}
+
+DArray *filterVersion(DArray *store, DocumentStore *documentStore, int version, void (*display)(FILE *, void *)) {
+	DArray *newResults = newDArray(display);
+	for (int i = 0; i < sizeDocumentStore(documentStore); i++) {
+		Document *document = getDocumentStore(documentStore, i);
+		int docID = getIDDocument(document);
+		char *keyValue = buildKeyValuePair("DocID", docID);
+		DArray *resultArray = searchDarray(store, keyValue, display);
+		sortDarray(resultArray, "DocID");
+		sortDarray(resultArray, "vn");
+		for (int j = 0; j < version; j++) {
+			insertDArray(newResults, getDArray(resultArray, j));
+		}
+	}
+	return newResults;
 }
 
 void displayDataBase(FILE *outFile, DataBase *dataBase) {
