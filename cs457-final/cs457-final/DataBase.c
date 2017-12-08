@@ -25,7 +25,7 @@ char *buildKeyValuePair(char *, int);
 int countIntegers(int);
 int isRangedQuery(char *);
 int isAndQuery(char *);
-DArray *separateQueries(char *);
+DArray *separateFields(char *);
 int doesDarrayContainKeyValue(DArray *, char *);
 char *convertToKeyValue(char *);
 char *flattenRange(char *);
@@ -107,7 +107,7 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 	char *token = malloc(strlen(query));
 	strcpy(token, query);
 	
-	DArray *keyValues = separateQueries(query);
+	DArray *keyValues = separateFields(query);
 	for (int i = 0; i < sizeDArray(keyValues); i++) {
 		char *keyValue = getDArray(keyValues, i);
 		DArray *tmp = newDArray(dataBase->display);
@@ -147,7 +147,7 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 	return newResultArray;
 }
 
-DArray *separateQueries(char *source) {
+DArray *separateFields(char *source) {
 	char *token = malloc(strlen(source));
 	strcpy(token, source);
 	
@@ -380,9 +380,31 @@ DArray *filterVersion(DArray *store, DocumentStore *documentStore, int version, 
 	return newResults;
 }
 
-void displayDataBase(FILE *outFile, DataBase *dataBase) {
+void displayDataBase(FILE *file, DataBase *dataBase) {
 	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
 		Record *record = getDArray(dataBase->store, i);
-		printf("%s\n", getRecord(record));
+		fprintf(file, "%s\n", getRecord(record));
+	}
+}
+
+void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
+	for (int i = 0; i < sizeDArray(results); i++) {
+		Record *record = getDArray(results, i);
+		char *recordFields = getRecord(record);
+		if (fields == 0) {
+			fprintf(file, "%s", recordFields);
+		} else {
+			DArray *splitFields = separateFields(fields);
+			for (int j = 0; j < sizeDArray(splitFields); j++) {
+				char *currentField = getDArray(splitFields, j);
+				if (strstr(recordFields, currentField)) {
+					char *key = currentField;
+					Integer *value = parseInteger(recordFields, key);
+					char *keyValue = buildKeyValuePair(key, getInteger(value));
+					fprintf(file, "%s ", keyValue);
+				}
+			}
+		}
+		fprintf(file, "\n");
 	}
 }

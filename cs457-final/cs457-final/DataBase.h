@@ -20,5 +20,6 @@ DArray *queryDataBase(DataBase *, char *, int);
 int countDataBase(DataBase *, char *, int);
 DArray *sortDataBase(DataBase *, char *, int);
 void displayDataBase(FILE *, DataBase *);
+void displaySelectDataBase(FILE *, DArray *, char *);
 
 #endif /* DataBase_h */
