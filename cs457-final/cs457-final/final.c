@@ -73,7 +73,8 @@ int main(int argc, const char * argv[]) {
 	insertDataBase(dataBase, "DocID:0 test:2");
 	insertDataBase(dataBase, "DocID:3 test:2");
 	insertDataBase(dataBase, "DocID:2 test:2");
-	int count = countDataBase(dataBase, "DocID", 1);
+	insertDataBase(dataBase, "DocID:2 test:2");
+	int count = countDataBase(dataBase, "DocID", 3);
 	printf("%d", count);
 	printf("\n");
 	return 0;

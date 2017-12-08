@@ -32,7 +32,7 @@ char *flattenRange(char *);
 char *getKey(char *);
 char *findKeyValue(char *, char *);
 char *stripNotEqualOp(char *);
-int max(int, int);
+int min(int, int);
 void sortDarray(DArray *, char *);
 DArray *searchDataBase(DataBase *, char *);
 DArray *splitFields(Record *);
@@ -294,14 +294,21 @@ char *stripNotEqualOp(char *source) {
 }
 
 int countDataBase(DataBase *dataBase, char *query, int version) {
-	DArray *resultsArray = searchDataBase(dataBase, query);
 	if (version > 0) {
-		sortDarray(resultsArray, "vn");
-		for (int i = 0; i < sizeDArray(resultsArray); i++) {
-			
+		int count = 0;
+		for (int i = 0; i < sizeDocumentStore(dataBase->documentStore); i++) {
+			Document *document = getDocumentStore(dataBase->documentStore, i);
+			int docID = getIDDocument(document);
+			char *keyValue = buildKeyValuePair("DocID", docID);
+			DArray *results = searchDataBase(dataBase, keyValue);
+			count += min(sizeDArray(results), version);
 		}
+		
+		return count;
 	}
-	return sizeDArray(resultsArray);
+	
+	DArray *results = searchDataBase(dataBase, query);
+	return sizeDArray(results);
 }
 
 DArray *searchDataBase(DataBase *dataBase, char *query) {
@@ -315,8 +322,8 @@ DArray *searchDataBase(DataBase *dataBase, char *query) {
 	return resultArray;
 }
 
-int max(int a, int b) {
-	return a > b ? a : b;
+int min(int a, int b) {
+	return a < b ? a : b;
 }
 
 DArray *sortDataBase(DataBase *dataBase, char *field) {
