@@ -24,8 +24,6 @@ int main(int argc, const char * argv[]) {
 	insertDataBase(dataBase, "DocID:0 test:2");
 	insertDataBase(dataBase, "DocID:3 test:2");
 	insertDataBase(dataBase, "DocID:2 test:2");
-	DArray *results = sortDataBase(dataBase, "DocID");
-	displayDArray(stdout, results);
 	printf("\n");
 	return 0;
 }

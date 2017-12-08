@@ -31,6 +31,7 @@ char *convertToKeyValue(char *source);
 char *flattenRange(char *);
 char *getKey(char *);
 char *findKeyValue(char *, char *);
+DArray *searchDataBase(DataBase *, char *);
 DArray *splitFields(Record *record);
 DArray *andQuery(DataBase *darray, char *searchVal);
 DArray *rangedQuery(DataBase *, char *);
@@ -267,18 +268,12 @@ DArray *basicQuery(DataBase *dataBase, char *query) {
 }
 
 int countDataBase(DataBase *dataBase, char *query) {
-	DArray *resultsArray = basicQuery(dataBase, query);
+	DArray *resultsArray = searchDataBase(dataBase, query);
 	return sizeDArray(resultsArray);
 }
 
-void swap(void *left, void *right) {
-	void *temp = left;
-	left = right;
-	right = temp;
-}
-
 DArray *sortDataBase(DataBase *dataBase, char *field) {
-	DArray *resultsArray = basicQuery(dataBase, field);
+	DArray *resultsArray = searchDataBase(dataBase, field);
 	for (int i = 0; i < sizeDArray(resultsArray) - 1; i++) {
 		for (int j = 0; j < sizeDArray(resultsArray) - i - 1; j++) {
 			Record *currentRecord = getDArray(resultsArray, j);
@@ -292,6 +287,17 @@ DArray *sortDataBase(DataBase *dataBase, char *field) {
 		}
 	}
 	return resultsArray;
+}
+
+DArray *searchDataBase(DataBase *dataBase, char *query) {
+	DArray *resultArray = newDArray(dataBase->display);
+	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+		Record *record = getDArray(dataBase->store, i);
+		if (strstr(getRecord(record), query)) {
+			insertDArray(resultArray, record);
+		}
+	}
+	return resultArray;
 }
 
 void displayDataBase(FILE *outFile, DataBase *dataBase) {
