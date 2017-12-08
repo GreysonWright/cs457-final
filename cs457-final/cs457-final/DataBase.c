@@ -25,16 +25,18 @@ char *buildKeyValuePair(char *, int);
 int countIntegers(int);
 int isRangedQuery(char *);
 int isAndQuery(char *);
-DArray *separateQueries(char *source);
+DArray *separateQueries(char *);
 int doesDarrayContainKeyValue(DArray *, char *);
-char *convertToKeyValue(char *source);
+char *convertToKeyValue(char *);
 char *flattenRange(char *);
 char *getKey(char *);
 char *findKeyValue(char *, char *);
 char *stripNotEqualOp(char *);
+int max(int, int);
+void sortDarray(DArray *, char *);
 DArray *searchDataBase(DataBase *, char *);
-DArray *splitFields(Record *record);
-DArray *andQuery(DataBase *darray, char *searchVal);
+DArray *splitFields(Record *);
+DArray *andQuery(DataBase *, char *);
 DArray *rangedQuery(DataBase *, char *);
 DArray *basicQuery(DataBase *, char*);
 
@@ -291,26 +293,15 @@ char *stripNotEqualOp(char *source) {
 	return keyValue;
 }
 
-int countDataBase(DataBase *dataBase, char *query) {
+int countDataBase(DataBase *dataBase, char *query, int version) {
 	DArray *resultsArray = searchDataBase(dataBase, query);
-	return sizeDArray(resultsArray);
-}
-
-DArray *sortDataBase(DataBase *dataBase, char *field) {
-	DArray *resultsArray = searchDataBase(dataBase, field);
-	for (int i = 0; i < sizeDArray(resultsArray) - 1; i++) {
-		for (int j = 0; j < sizeDArray(resultsArray) - i - 1; j++) {
-			Record *currentRecord = getDArray(resultsArray, j);
-			Integer *currentValue = parseInteger(getRecord(currentRecord), field);
-			Record *nextRecord = getDArray(resultsArray, j + 1);
-			Integer *nextValue = parseInteger(getRecord(nextRecord), field);
-			if (compareInteger(nextValue, currentValue) > 0) {
-				setDArray(resultsArray, j, nextRecord);
-				setDArray(resultsArray, j + 1, currentRecord);
-			}
+	if (version > 0) {
+		sortDarray(resultsArray, "vn");
+		for (int i = 0; i < sizeDArray(resultsArray); i++) {
+			
 		}
 	}
-	return resultsArray;
+	return sizeDArray(resultsArray);
 }
 
 DArray *searchDataBase(DataBase *dataBase, char *query) {
@@ -322,6 +313,31 @@ DArray *searchDataBase(DataBase *dataBase, char *query) {
 		}
 	}
 	return resultArray;
+}
+
+int max(int a, int b) {
+	return a > b ? a : b;
+}
+
+DArray *sortDataBase(DataBase *dataBase, char *field) {
+	DArray *resultsArray = searchDataBase(dataBase, field);
+	sortDarray(resultsArray, field);
+	return resultsArray;
+}
+
+void sortDarray(DArray *darray, char *field) {
+	for (int i = 0; i < sizeDArray(darray) - 1; i++) {
+		for (int j = 0; j < sizeDArray(darray) - i - 1; j++) {
+			Record *currentRecord = getDArray(darray, j);
+			Integer *currentValue = parseInteger(getRecord(currentRecord), field);
+			Record *nextRecord = getDArray(darray, j + 1);
+			Integer *nextValue = parseInteger(getRecord(nextRecord), field);
+			if (compareInteger(nextValue, currentValue) > 0) {
+				setDArray(darray, j, nextRecord);
+				setDArray(darray, j + 1, currentRecord);
+			}
+		}
+	}
 }
 
 void displayDataBase(FILE *outFile, DataBase *dataBase) {
