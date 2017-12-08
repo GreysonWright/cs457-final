@@ -31,6 +31,7 @@ char *convertToKeyValue(char *source);
 char *flattenRange(char *);
 char *getKey(char *);
 char *findKeyValue(char *, char *);
+char *stripNotEqualOp(char *);
 DArray *searchDataBase(DataBase *, char *);
 DArray *splitFields(Record *record);
 DArray *andQuery(DataBase *darray, char *searchVal);
@@ -83,7 +84,7 @@ DArray *queryDataBase(DataBase *dataBase, char *query) {
 }
 
 int isRangedQuery(char *query) {
-	return strstr(query, ">") || strstr(query, "<");
+	return !strstr(query, "<>") && (strstr(query, ">") || strstr(query, "<"));
 }
 
 int isAndQuery(char *query) {
@@ -256,15 +257,38 @@ char *findKeyValue(char *source, char *key) {
 }
 
 DArray *basicQuery(DataBase *dataBase, char *query) {
+	if (strstr(query, "=")) {
+		query = convertToKeyValue(query);
+	}
 	DArray *resultArray = newDArray(dataBase->display);
 	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
 		Record *record = getDArray(dataBase->store, i);
 		char *key = getKey(query);
-		if (strstr(getRecord(record), query) || strstr(getRecord(record), key) == 0) {
-			insertDArray(resultArray, record);
+		if (!strstr(query, "<>")) {
+			if (strstr(getRecord(record), query) || !strstr(getRecord(record), key)) {
+				insertDArray(resultArray, record);
+			}
+		} else {
+			char *strippedQuery = stripNotEqualOp(query);
+			if (!strstr(getRecord(record), strippedQuery)) {
+				insertDArray(resultArray, record);
+			}
 		}
 	}
 	return resultArray;
+}
+
+char *stripNotEqualOp(char *source) {
+	char *keyValue = malloc(strlen(source));
+	int count = 0;
+	for (int i = 0; i < strlen(source); i++) {
+		if (source[i] == '<') {
+			keyValue[count++] = ':';
+		} else if (source[i] != '>') {
+			keyValue[count++] = source[i];
+		}
+	}
+	return keyValue;
 }
 
 int countDataBase(DataBase *dataBase, char *query) {
