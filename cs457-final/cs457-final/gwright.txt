@@ -18,11 +18,9 @@ vn:1 DocID:10 Age:54
 vn:1 DocID:1 Age:98 
 vn:1 DocID:7 Age:77 
 vn:1 DocID:555 Age:76 
-vn:1 DocID:55 Age:28 
 vn:1 DocID:666 Age:97 
 vn:1 DocID:66 Age:91 
 vn:1 DocID:780 Age:56 
-vn:1 DocID:570 Age:34 
 vn:1 DocID:43 
 vn:1 DocID:620 Age:78 
 
@@ -37,11 +35,9 @@ vn:1 DocID:43
 vn:1 DocID:10 Age:54 
 vn:1 DocID:7 Age:77 
 vn:1 DocID:555 Age:76 
-vn:1 DocID:55 Age:28 
 vn:1 DocID:666 Age:97 
 vn:1 DocID:66 Age:91 
 vn:1 DocID:780 Age:56 
-vn:1 DocID:570 Age:34 
 vn:1 DocID:620 Age:78 
 
 final.query([age=35], [DocID])
@@ -53,32 +49,32 @@ final.count([Dept])
 count_Dept:25
 
 final.sort([Age])
-sysid:18 vn:4 Dept:4 DocID:4 Salary:181800 Age:36 
-sysid:5 vn:1 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
 sysid:7 vn:1 Dept:4 Age:98 DocID:1 
-sysid:15 vn:1 Age:77 Gender:1 DocID:7 City:1 
-sysid:19 vn:1 DocID:555 City:1 Age:76 Salary:170000 
-sysid:20 vn:1 Age:28 State:15 DocID:55 Spec1:76 
 sysid:21 vn:1 State:7 Age:97 Spec1:56 Gender:2 Salary:181800 Dept:2 DocID:666 City:2 
 sysid:22 vn:1 DocID:66 Salary:130300 Spec1:41 Age:91 
-sysid:23 vn:1 DocID:780 Age:56 
-sysid:28 vn:1 DocID:570 City:1 Age:34 Gender:2 
 sysid:33 vn:1 Gender:2 Spec1:26 Age:78 DocID:620 
+sysid:15 vn:1 Age:77 Gender:1 DocID:7 City:1 
+sysid:19 vn:1 DocID:555 City:1 Age:76 Salary:170000 
+sysid:23 vn:1 DocID:780 Age:56 
+sysid:5 vn:1 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
+sysid:18 vn:4 Dept:4 DocID:4 Salary:181800 Age:36 
+sysid:28 vn:1 DocID:570 City:1 Age:34 Gender:2 
+sysid:20 vn:1 Age:28 State:15 DocID:55 Spec1:76 
 
 final.sort([Age], [3])
-sysid:18 vn:4 Dept:4 DocID:4 Salary:181800 Age:36 
-sysid:13 vn:3 Dept:4 DocID:4 Salary:185800 Age:35 
-sysid:12 vn:2 Dept:4 DocID:4 Salary:181800 Age:36 
-sysid:5 vn:1 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
 sysid:7 vn:1 Dept:4 Age:98 DocID:1 
-sysid:15 vn:1 Age:77 Gender:1 DocID:7 City:1 
-sysid:19 vn:1 DocID:555 City:1 Age:76 Salary:170000 
-sysid:20 vn:1 Age:28 State:15 DocID:55 Spec1:76 
 sysid:21 vn:1 State:7 Age:97 Spec1:56 Gender:2 Salary:181800 Dept:2 DocID:666 City:2 
 sysid:22 vn:1 DocID:66 Salary:130300 Spec1:41 Age:91 
-sysid:23 vn:1 DocID:780 Age:56 
-sysid:28 vn:1 DocID:570 City:1 Age:34 Gender:2 
 sysid:33 vn:1 Gender:2 Spec1:26 Age:78 DocID:620 
+sysid:15 vn:1 Age:77 Gender:1 DocID:7 City:1 
+sysid:19 vn:1 DocID:555 City:1 Age:76 Salary:170000 
+sysid:23 vn:1 DocID:780 Age:56 
+sysid:5 vn:1 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
+sysid:18 vn:4 Dept:4 DocID:4 Salary:181800 Age:36 
+sysid:12 vn:2 Dept:4 DocID:4 Salary:181800 Age:36 
+sysid:13 vn:3 Dept:4 DocID:4 Salary:185800 Age:35 
+sysid:28 vn:1 DocID:570 City:1 Age:34 Gender:2 
+sysid:20 vn:1 Age:28 State:15 DocID:55 Spec1:76 
 
 final.query([], [sysid, Gender, Salary, City])
 sysid:18 vn:4 Dept:4 DocID:4 Salary:181800 Age:36 

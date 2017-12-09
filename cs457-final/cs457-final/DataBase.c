@@ -38,6 +38,7 @@ char *addKeyPadding(char *);
 int min(int, int);
 void sortDarray(DArray *, char *);
 char *stripWhiteSpaceDataBase(char *);
+char *removeKeyPadding(char *);
 DArray *findNonExistingField(DataBase *, char *);
 DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
 DArray *searchDataBase(DataBase *, char *);
@@ -273,12 +274,31 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			queryKey = stripWhiteSpaceDataBase(queryKey);
 			queryKey = addKeyPadding(queryKey);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0) {
+			Integer *recordValue = 0;
+			Integer *queryValue = 0;
+			if (recordKeyValue) {
+				char *key = removeKeyPadding(queryKey);
+				recordValue = parseInteger(recordKeyValue, key);
+				queryValue = parseInteger(queryKeyValue, key);
+			}
+			if (recordValue && queryValue && compareInteger(recordValue, queryValue) > 0) {
 				insertDArray(resultArray, record);
 			}
 		}
 	}
 	return resultArray;
+}
+
+char *removeKeyPadding(char *string) {
+	long length = strlen(string);
+	int count = 0;
+	char *newString = malloc(length);
+	for (int i = 0; i < length; i++) {
+		if (string[i] != ':' && !isspace(string[i])) {
+			newString[count++] = string[i];
+		}
+	}
+	return newString;
 }
 
 char *flattenRange(char *source) {
@@ -419,9 +439,10 @@ void sortDarray(DArray *darray, char *field) {
 	for (int i = 0; i < sizeDArray(darray) - 1; i++) {
 		for (int j = 0; j < sizeDArray(darray) - i - 1; j++) {
 			Record *currentRecord = getDArray(darray, j);
-			Integer *currentValue = parseInteger(getRecord(currentRecord), field);
+			char *key = removeKeyPadding(field);
+			Integer *currentValue = parseInteger(getRecord(currentRecord), key);
 			Record *nextRecord = getDArray(darray, j + 1);
-			Integer *nextValue = parseInteger(getRecord(nextRecord), field);
+			Integer *nextValue = parseInteger(getRecord(nextRecord), key);
 			if (compareInteger(nextValue, currentValue) > 0) {
 				setDArray(darray, j, nextRecord);
 				setDArray(darray, j + 1, currentRecord);
