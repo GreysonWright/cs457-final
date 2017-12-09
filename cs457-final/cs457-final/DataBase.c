@@ -132,40 +132,43 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 				insertDArray(resultArray, record);
 			}
 		}
-		
-		char *key = getKey(keyValue);
-		DArray *missingFields = findNonExistingField(dataBase, key);
-		for (int j = 0; j < sizeDArray(missingFields); j++) {
-			Record *record = getDArray(missingFields, j);
-			char *searchKeyValue = findKeyValue(getRecord(record), "sysid");
-			if (!doesDarrayContainKeyValue(resultArray, searchKeyValue)) {
-				insertDArray(resultArray, record);
-			}
-		}
 	}
 	
-//	for (int i = 0; i < sizeDArray(resultArray); i++) {
-//		Record *iRecord = getDArray(resultArray, i);
-//		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
-//		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
-//			Record *jRecord = getDArray(resultArray, j);
-//			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
-//			if (compareInteger(isysID, jsysID) == 0 && j != i) {
-//				markAsDuplicateRecord(jRecord);
+//	for (int i = 0; i < sizeDArray(keyValues); i++) {
+//		char *keyValue = getDArray(keyValues, i);
+//		char *key = getKey(keyValue);
+//		DArray *missingFields = findNonExistingField(dataBase, key);
+//		for (int j = 0; j < sizeDArray(missingFields); j++) {
+//			Record *record = getDArray(missingFields, j);
+//			char *searchKeyValue = findKeyValue(getRecord(record), "sysid");
+//			if (!doesDarrayContainKeyValue(resultArray, searchKeyValue)) {
+//				insertDArray(resultArray, record);
 //			}
 //		}
 //	}
-//
-//	DArray *newResultArray = newDArray(dataBase->display);
-//	for (int i = 0; i < sizeDArray(resultArray); i++) {
-//		Record *record = getDArray(resultArray, i);
-//		char *keyValue = findKeyValue(getRecord(record), "sysid");
-//		if (getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
-//			insertDArray(newResultArray, record);
-//		}
-//	}
 	
-	return resultArray;
+	for (int i = 0; i < sizeDArray(resultArray); i++) {
+		Record *iRecord = getDArray(resultArray, i);
+		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
+		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
+			Record *jRecord = getDArray(resultArray, j);
+			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
+			if (compareInteger(isysID, jsysID) == 0 && j != i) {
+				markAsDuplicateRecord(jRecord);
+			}
+		}
+	}
+
+	DArray *newResultArray = newDArray(dataBase->display);
+	for (int i = 0; i < sizeDArray(resultArray); i++) {
+		Record *record = getDArray(resultArray, i);
+		char *keyValue = findKeyValue(getRecord(record), "sysid");
+		if (!getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
+			insertDArray(newResultArray, record);
+		}
+	}
+	
+	return newResultArray;
 }
 
 DArray *findNonExistingField(DataBase *dataBase, char *query) {

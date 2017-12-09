@@ -38,7 +38,7 @@ int main(int argc, const char * argv[]) {
 		char *collectionCommand = strtok(line, "[");
 		if (strstr(collectionCommand, "final.")) {
 			char *query = strtok(0, "]");
-			if (strstr(query, ",")) {
+			if (strstr(query, "[")) {
 				query = 0;
 			}
 			if (strstr(collectionCommand, "insert")) {
