@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "DataBase.h"
 #include "Record.h"
 #include "Document.h"
@@ -34,6 +35,7 @@ char *findKeyValue(char *, char *);
 char *stripNotEqualOp(char *);
 int min(int, int);
 void sortDarray(DArray *, char *);
+char *stripWhiteSpaceDataBase(char *);
 DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
 DArray *searchDataBase(DataBase *, char *);
 DArray *searchDarray(DArray *, char *query, void (*)(FILE *, void *));
@@ -81,11 +83,11 @@ DArray *queryDataBase(DataBase *dataBase, char *query, int version) {
 	DArray *results = 0;
 	if (isAndQuery(query)) {
 		results = andQuery(dataBase, query);
-	}
-	if (isRangedQuery(query)) {
+	} else if (isRangedQuery(query)) {
 		results = rangedQuery(dataBase, query);
+	} else {
+		results = basicQuery(dataBase, query);
 	}
-	results = basicQuery(dataBase, query);
 	
 	if (version > 0) {
 		results = filterVersion(results, dataBase->documentStore, version, dataBase->display);
@@ -123,28 +125,28 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 		}
 	}
 	
-	for (int i = 0; i < sizeDArray(resultArray); i++) {
-		Record *iRecord = getDArray(resultArray, i);
-		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
-		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
-			Record *jRecord = getDArray(resultArray, j);
-			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
-			if (compareInteger(isysID, jsysID) == 0 && j != i) {
-				markAsDuplicateRecord(jRecord);
-			}
-		}
-	}
+//	for (int i = 0; i < sizeDArray(resultArray); i++) {
+//		Record *iRecord = getDArray(resultArray, i);
+//		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
+//		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
+//			Record *jRecord = getDArray(resultArray, j);
+//			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
+//			if (compareInteger(isysID, jsysID) == 0 && j != i) {
+//				markAsDuplicateRecord(jRecord);
+//			}
+//		}
+//	}
+//
+//	DArray *newResultArray = newDArray(dataBase->display);
+//	for (int i = 0; i < sizeDArray(resultArray); i++) {
+//		Record *record = getDArray(resultArray, i);
+//		char *keyValue = findKeyValue(getRecord(record), "sysid");
+//		if (getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
+//			insertDArray(newResultArray, record);
+//		}
+//	}
 	
-	DArray *newResultArray = newDArray(dataBase->display);
-	for (int i = 0; i < sizeDArray(resultArray); i++) {
-		Record *record = getDArray(resultArray, i);
-		char *keyValue = findKeyValue(getRecord(record), "sysid");
-		if (getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
-			insertDArray(newResultArray, record);
-		}
-	}
-	
-	return newResultArray;
+	return resultArray;
 }
 
 DArray *separateFields(char *source) {
@@ -192,7 +194,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0)) {
+			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -202,7 +204,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0)) {
+			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -212,7 +214,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0)) {
+			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -222,7 +224,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0)) {
+			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -274,9 +276,8 @@ DArray *basicQuery(DataBase *dataBase, char *query) {
 	DArray *resultArray = newDArray(dataBase->display);
 	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
 		Record *record = getDArray(dataBase->store, i);
-		char *key = getKey(query);
 		if (!strstr(query, "<>")) {
-			if (strstr(getRecord(record), query) || !strstr(getRecord(record), key)) {
+			if (strstr(getRecord(record), query)) {
 				insertDArray(resultArray, record);
 			}
 		} else {
@@ -396,9 +397,12 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 		} else {
 			DArray *splitFields = separateFields(fields);
 			for (int j = 0; j < sizeDArray(splitFields); j++) {
+				Integer *vnVal = parseInteger(recordFields, "vn");
+				char *vnKeyValue = buildKeyValuePair("vn", getInteger(vnVal));
+				fprintf(file, "%s ", vnKeyValue);
 				char *currentField = getDArray(splitFields, j);
 				if (strstr(recordFields, currentField)) {
-					char *key = currentField;
+					char *key = stripWhiteSpaceDataBase(currentField);
 					Integer *value = parseInteger(recordFields, key);
 					char *keyValue = buildKeyValuePair(key, getInteger(value));
 					fprintf(file, "%s ", keyValue);
@@ -407,4 +411,16 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 		}
 		fprintf(file, "\n");
 	}
+}
+
+char *stripWhiteSpaceDataBase(char *token) {
+	long tokenLen = strlen(token);
+	char *newToken = malloc(tokenLen);
+	int count = 0;
+	for (int i = 0; i < tokenLen; i++) {
+		if (!isspace(token[i])) {
+			newToken[count++] = token[i];
+		}
+	}
+	return newToken;
 }
