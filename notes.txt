@@ -21,3 +21,6 @@ for each field check if is ranged or not use basic query or ranged query
 
 support <> in queries and only display unique docids unless otherwise specified with vn
 check sort for fields that don't exist
+
+in queries instead of strstr use something to match strings more exactly
+like add space in front and behind keys for instance [age=4] -> " age:4 "
