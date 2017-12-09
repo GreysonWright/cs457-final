@@ -459,7 +459,7 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 		Record *record = getDArray(results, i);
 		char *recordFields = getRecord(record);
 		if (fields == 0) {
-			fprintf(file, "%s", recordFields);
+			fprintf(file, "%s", recordFields + 1);
 		} else {
 			DArray *splitFields = separateFields(fields);
 			Integer *vnVal = parseInteger(recordFields, "vn");
