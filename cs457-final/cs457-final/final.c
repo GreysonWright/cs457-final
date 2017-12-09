@@ -38,25 +38,30 @@ int main(int argc, const char * argv[]) {
 		char *collectionCommand = strtok(line, "[");
 		if (strstr(collectionCommand, "final.")) {
 			char *query = strtok(0, "]");
-			if (strstr(collectionCommand, "count")) {
+			if (strstr(collectionCommand, "insert")) {
+				insertDataBase(dataBase, query);
+			} else if (strstr(collectionCommand, "count")) {
 				(void)strtok(0, "[");
 				char *versionString = strtok(0, "]");
 				int version = parseVersion(versionString);
 				int count = countDataBase(dataBase, query, version);
 				fprintf(outFile, "count_%s:%d\n", query, count);
-			} else {
+			} else if (strstr(collectionCommand, "query")) {
+				DArray *results = newDArray(0);
 				(void)strtok(0, "[");
 				char *fields = strtok(0, "]");
 				(void)strtok(0, "[");
 				char *versionString = strtok(0, "]");
 				int version = parseVersion(versionString);
-				DArray *results = newDArray(0);
-				if (strstr(collectionCommand, "query")) {
-					results = queryDataBase(dataBase, query, version);
-				} else if (strtok(collectionCommand, "sort")) {
-					results = sortDataBase(dataBase, query, version);
-				}
+				results = queryDataBase(dataBase, query, version);
 				displaySelectDataBase(outFile, results, fields);
+			} else if (strstr(collectionCommand, "sort")) {
+				DArray *results = newDArray(0);
+				(void)strtok(0, "[");
+				char *versionString = strtok(0, "]");
+				int version = parseVersion(versionString);
+				results = sortDataBase(dataBase, query, version);
+				displaySelectDataBase(outFile, results, 0);
 			}
 		}
 		fprintf(outFile, "\n");
@@ -83,7 +88,7 @@ int parseVersion(char *versionString) {
 	if (versionString == 0) {
 		return 1;
 	}
-	if (strcmp(versionString, ")")) {
+	if (strcmp(versionString, ")") == 0) {
 		return 0;
 	}
 	return atoi(versionString);
