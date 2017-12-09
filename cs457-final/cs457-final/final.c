@@ -38,6 +38,9 @@ int main(int argc, const char * argv[]) {
 		char *collectionCommand = strtok(line, "[");
 		if (strstr(collectionCommand, "final.")) {
 			char *query = strtok(0, "]");
+			if (strstr(query, ",")) {
+				query = 0;
+			}
 			if (strstr(collectionCommand, "insert")) {
 				insertDataBase(dataBase, query);
 			} else if (strstr(collectionCommand, "count")) {
@@ -50,6 +53,9 @@ int main(int argc, const char * argv[]) {
 				DArray *results = newDArray(0);
 				(void)strtok(0, "[");
 				char *fields = strtok(0, "]");
+				if (fields && strstr(fields, ")")) {
+					fields = 0;
+				}
 				(void)strtok(0, "[");
 				char *versionString = strtok(0, "]");
 				int version = parseVersion(versionString);

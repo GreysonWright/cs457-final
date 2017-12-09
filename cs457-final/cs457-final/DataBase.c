@@ -36,13 +36,16 @@ char *stripNotEqualOp(char *);
 int min(int, int);
 void sortDarray(DArray *, char *);
 char *stripWhiteSpaceDataBase(char *);
+DArray *findNonExistingField(DataBase *, char *);
 DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
 DArray *searchDataBase(DataBase *, char *);
-DArray *searchDarray(DArray *, char *query, void (*)(FILE *, void *));
+DArray *searchDarray(DArray *, char *, void (*)(FILE *, void *));
 DArray *splitFields(Record *);
 DArray *andQuery(DataBase *, char *);
 DArray *rangedQuery(DataBase *, char *);
 DArray *basicQuery(DataBase *, char*);
+DArray *andRangedQuery(DataBase *, char *);
+DArray *andBasicQuery(DataBase *, char *);
 
 DataBase *newDataBase(void (*display)(FILE *file, void *value)) {
 	DataBase *dataBase = malloc(sizeof *dataBase);
@@ -81,7 +84,9 @@ int countIntegers(int value) {
 
 DArray *queryDataBase(DataBase *dataBase, char *query, int version) {
 	DArray *results = 0;
-	if (isAndQuery(query)) {
+	if (query == 0) {
+		results = basicQuery(dataBase, "sysid");
+	} else if (isAndQuery(query)) {
 		results = andQuery(dataBase, query);
 	} else if (isRangedQuery(query)) {
 		results = rangedQuery(dataBase, query);
@@ -120,8 +125,22 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 			tmp = basicQuery(dataBase, keyValue);
 		}
 		
-		for (int i = 0; i < sizeDArray(tmp); i++) {
-			insertDArray(resultArray, getDArray(tmp, i));
+		for (int j = 0; j < sizeDArray(tmp); j++) {
+			Record *record = getDArray(tmp, j);
+			char *searchKeyValue = findKeyValue(getRecord(record), "sysid");
+			if (!doesDarrayContainKeyValue(resultArray, searchKeyValue)) {
+				insertDArray(resultArray, record);
+			}
+		}
+		
+		char *key = getKey(keyValue);
+		DArray *missingFields = findNonExistingField(dataBase, key);
+		for (int j = 0; j < sizeDArray(missingFields); j++) {
+			Record *record = getDArray(missingFields, j);
+			char *searchKeyValue = findKeyValue(getRecord(record), "sysid");
+			if (!doesDarrayContainKeyValue(resultArray, searchKeyValue)) {
+				insertDArray(resultArray, record);
+			}
 		}
 	}
 	
@@ -146,6 +165,18 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 //		}
 //	}
 	
+	return resultArray;
+}
+
+DArray *findNonExistingField(DataBase *dataBase, char *query) {
+	DArray *resultArray = newDArray(dataBase->display);
+	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+		Record *record = getDArray(dataBase->store, i);
+		char *key = getKey(query);
+		if (!strstr(getRecord(record), key)) {
+			insertDArray(resultArray, record);
+		}
+	}
 	return resultArray;
 }
 
@@ -232,6 +263,52 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 	return resultArray;
 }
 
+DArray *andRangedQuery(DataBase *dataBase, char *query) {
+	DArray *resultArray = newDArray(dataBase->display);
+	if (strstr(query, "<=")) {
+		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+			Record *record = getDArray(dataBase->store, i);
+			char *queryKeyValue = flattenRange(query);
+			char *queryKey = getKey(queryKeyValue);
+			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
+			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0)) {
+				insertDArray(resultArray, record);
+			}
+		}
+	} else if (strstr(query, ">=")) {
+		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+			Record *record = getDArray(dataBase->store, i);
+			char *queryKeyValue = flattenRange(query);
+			char *queryKey = getKey(queryKeyValue);
+			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
+			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0)) {
+				insertDArray(resultArray, record);
+			}
+		}
+	} else if (strstr(query, "<")) {
+		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+			Record *record = getDArray(dataBase->store, i);
+			char *queryKeyValue = flattenRange(query);
+			char *queryKey = getKey(queryKeyValue);
+			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
+			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0)) {
+				insertDArray(resultArray, record);
+			}
+		}
+	} else {
+		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+			Record *record = getDArray(dataBase->store, i);
+			char *queryKeyValue = flattenRange(query);
+			char *queryKey = getKey(queryKeyValue);
+			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
+			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0)) {
+				insertDArray(resultArray, record);
+			}
+		}
+	}
+	return resultArray;
+}
+
 char *flattenRange(char *source) {
 	char *keyValue = malloc(strlen(source));
 	int count = 0;
@@ -283,6 +360,28 @@ DArray *basicQuery(DataBase *dataBase, char *query) {
 		} else {
 			char *strippedQuery = stripNotEqualOp(query);
 			if (!strstr(getRecord(record), strippedQuery)) {
+				insertDArray(resultArray, record);
+			}
+		}
+	}
+	return resultArray;
+}
+
+DArray *andBasicQuery(DataBase *dataBase, char *query) {
+	if (strstr(query, "=")) {
+		query = convertToKeyValue(query);
+	}
+	DArray *resultArray = newDArray(dataBase->display);
+	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+		Record *record = getDArray(dataBase->store, i);
+		if (!strstr(query, "<>")) {
+			if (strstr(getRecord(record), query)) {
+				insertDArray(resultArray, record);
+			}
+		} else {
+			char *strippedQuery = stripNotEqualOp(query);
+			char *key = getKey(query);
+			if (!strstr(getRecord(record), strippedQuery) && !strstr(getRecord(record), key)) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -396,10 +495,10 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 			fprintf(file, "%s", recordFields);
 		} else {
 			DArray *splitFields = separateFields(fields);
+			Integer *vnVal = parseInteger(recordFields, "vn");
+			char *vnKeyValue = buildKeyValuePair("vn", getInteger(vnVal));
+			fprintf(file, "%s ", vnKeyValue);
 			for (int j = 0; j < sizeDArray(splitFields); j++) {
-				Integer *vnVal = parseInteger(recordFields, "vn");
-				char *vnKeyValue = buildKeyValuePair("vn", getInteger(vnVal));
-				fprintf(file, "%s ", vnKeyValue);
 				char *currentField = getDArray(splitFields, j);
 				if (strstr(recordFields, currentField)) {
 					char *key = stripWhiteSpaceDataBase(currentField);
