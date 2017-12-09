@@ -228,7 +228,6 @@ char *convertToKeyValue(char *source) {
 }
 
 DArray *rangedQuery(DataBase *dataBase, char *query) {
-	query = addSpacePadding(query);
 	DArray *resultArray = newDArray(dataBase->display);
 	if (strstr(query, "<=")) {
 		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
@@ -308,7 +307,7 @@ char *findKeyValue(char *source, char *key) {
 	strcpy(token, source);
 	
 	char *keyValue = strtok(token, " ");
-	keyValue = addSpacePadding(key);
+	keyValue = addSpacePadding(keyValue);
 	
 	while (keyValue) {
 		if (strstr(keyValue, key)) {
