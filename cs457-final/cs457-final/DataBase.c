@@ -307,9 +307,9 @@ char *findKeyValue(char *source, char *key) {
 	strcpy(token, source);
 	
 	char *keyValue = strtok(token, " ");
-	keyValue = addSpacePadding(keyValue);
 	
 	while (keyValue) {
+		keyValue = addSpacePadding(keyValue);
 		if (strstr(keyValue, key)) {
 			return keyValue;
 		}

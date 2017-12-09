@@ -11,11 +11,20 @@ vn:1 sysid:3 DocID:40
 vn:1 sysid:7 DocID:1 Age:98 
 vn:1 sysid:31 DocID:43 
 
-final.query([Dept=4, Age>35], [])
-sysid:18 vn:4 Dept:4 DocID:4 Salary:181800 Age:36 
-sysid:3 vn:1 Salary:84600 DocID:40 State:48 Spec1:46 Gender:2 Dept:4 
-sysid:7 vn:1 Dept:4 Age:98 DocID:1 
-sysid:31 vn:1 DocID:43 Dept:4 
+final.query([Dept=4, Age>35], [DocID, Age])
+vn:4 DocID:4 Age:36 
+vn:1 DocID:40 
+vn:1 DocID:10 Age:54 
+vn:1 DocID:1 Age:98 
+vn:1 DocID:7 Age:77 
+vn:1 DocID:555 Age:76 
+vn:1 DocID:55 Age:28 
+vn:1 DocID:666 Age:97 
+vn:1 DocID:66 Age:91 
+vn:1 DocID:780 Age:56 
+vn:1 DocID:570 Age:34 
+vn:1 DocID:43 
+vn:1 DocID:620 Age:78 
 
 final.query([Dept=4, Age>35], [DocID, Age], [])
 vn:4 DocID:4 Age:36 
@@ -25,6 +34,15 @@ vn:1 DocID:40
 vn:1 DocID:4 Age:35 
 vn:1 DocID:1 Age:98 
 vn:1 DocID:43 
+vn:1 DocID:10 Age:54 
+vn:1 DocID:7 Age:77 
+vn:1 DocID:555 Age:76 
+vn:1 DocID:55 Age:28 
+vn:1 DocID:666 Age:97 
+vn:1 DocID:66 Age:91 
+vn:1 DocID:780 Age:56 
+vn:1 DocID:570 Age:34 
+vn:1 DocID:620 Age:78 
 
 final.query([age=35], [DocID])
 
