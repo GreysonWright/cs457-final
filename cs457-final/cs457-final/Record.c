@@ -47,6 +47,10 @@ void appendFieldRecord(Record *record, char *keyValue) {
 	record->fields = fields;
 }
 
+void setRecord(Record *record, char *fields) {
+	record->fields = fields;
+}
+
 void markAsDuplicateRecord(Record *record) {
 	record->isDuplicate = 1;
 }

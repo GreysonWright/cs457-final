@@ -19,6 +19,7 @@ void displayRecord(FILE *, void *);
 char *getRecord(Record *);
 int getIsDuplicateRecord(Record *);
 void appendFieldRecord(Record *, char *);
+void setRecord(Record *, char *);
 void markAsDuplicateRecord(Record *);
 
 #endif /* Record_h */

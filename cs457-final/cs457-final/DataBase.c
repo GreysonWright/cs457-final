@@ -33,6 +33,8 @@ char *flattenRange(char *);
 char *getKey(char *);
 char *findKeyValue(char *, char *);
 char *stripNotEqualOp(char *);
+char *addSpacePadding(char *);
+char *addKeyPadding(char *);
 int min(int, int);
 void sortDarray(DArray *, char *);
 char *stripWhiteSpaceDataBase(char *);
@@ -65,6 +67,9 @@ void insertDataBase(DataBase *dataBase, char *fields) {
 	char *sysIDString = buildKeyValuePair("sysid", dataBase->fieldCount);
 	appendFieldRecord(record, vnString);
 	appendFieldRecord(record, sysIDString);
+	char *paddedFields = getRecord(record);
+	paddedFields = addSpacePadding(paddedFields);
+	setRecord(record, paddedFields);
 	insertDArray(dataBase->store, record);
 	dataBase->fieldCount++;
 }
@@ -85,12 +90,13 @@ int countIntegers(int value) {
 DArray *queryDataBase(DataBase *dataBase, char *query, int version) {
 	DArray *results = 0;
 	if (query == 0) {
-		results = basicQuery(dataBase, "sysid");
+		results = basicQuery(dataBase, " sysid:");
 	} else if (isAndQuery(query)) {
 		results = andQuery(dataBase, query);
 	} else if (isRangedQuery(query)) {
 		results = rangedQuery(dataBase, query);
 	} else {
+		query = addSpacePadding(query);
 		results = basicQuery(dataBase, query);
 	}
 	
@@ -117,6 +123,7 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 	DArray *keyValues = separateFields(query);
 	for (int i = 0; i < sizeDArray(keyValues); i++) {
 		char *keyValue = getDArray(keyValues, i);
+		keyValue = addSpacePadding(keyValue);
 		DArray *tmp = newDArray(dataBase->display);
 		if (isRangedQuery(keyValue)) {
 			tmp = rangedQuery(dataBase, keyValue);
@@ -127,7 +134,7 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 		
 		for (int j = 0; j < sizeDArray(tmp); j++) {
 			Record *record = getDArray(tmp, j);
-			char *searchKeyValue = findKeyValue(getRecord(record), "sysid");
+			char *searchKeyValue = findKeyValue(getRecord(record), " sysid:");
 			if (!doesDarrayContainKeyValue(resultArray, searchKeyValue)) {
 				insertDArray(resultArray, record);
 			}
@@ -147,28 +154,28 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 //		}
 //	}
 	
-	for (int i = 0; i < sizeDArray(resultArray); i++) {
-		Record *iRecord = getDArray(resultArray, i);
-		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
-		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
-			Record *jRecord = getDArray(resultArray, j);
-			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
-			if (compareInteger(isysID, jsysID) == 0 && j != i) {
-				markAsDuplicateRecord(jRecord);
-			}
-		}
-	}
-
-	DArray *newResultArray = newDArray(dataBase->display);
-	for (int i = 0; i < sizeDArray(resultArray); i++) {
-		Record *record = getDArray(resultArray, i);
-		char *keyValue = findKeyValue(getRecord(record), "sysid");
-		if (!getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
-			insertDArray(newResultArray, record);
-		}
-	}
+//	for (int i = 0; i < sizeDArray(resultArray); i++) {
+//		Record *iRecord = getDArray(resultArray, i);
+//		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
+//		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
+//			Record *jRecord = getDArray(resultArray, j);
+//			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
+//			if (compareInteger(isysID, jsysID) == 0 && j != i) {
+//				markAsDuplicateRecord(jRecord);
+//			}
+//		}
+//	}
+//
+//	DArray *newResultArray = newDArray(dataBase->display);
+//	for (int i = 0; i < sizeDArray(resultArray); i++) {
+//		Record *record = getDArray(resultArray, i);
+//		char *keyValue = findKeyValue(getRecord(record), "sysid");
+//		if (!getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
+//			insertDArray(newResultArray, record);
+//		}
+//	}
 	
-	return newResultArray;
+	return resultArray;
 }
 
 DArray *findNonExistingField(DataBase *dataBase, char *query) {
@@ -221,12 +228,15 @@ char *convertToKeyValue(char *source) {
 }
 
 DArray *rangedQuery(DataBase *dataBase, char *query) {
+	query = addSpacePadding(query);
 	DArray *resultArray = newDArray(dataBase->display);
 	if (strstr(query, "<=")) {
 		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
 			Record *record = getDArray(dataBase->store, i);
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
+			queryKey = stripWhiteSpaceDataBase(queryKey);
+			queryKey = addKeyPadding(queryKey);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
 			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0) {
 				insertDArray(resultArray, record);
@@ -237,6 +247,8 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			Record *record = getDArray(dataBase->store, i);
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
+			queryKey = stripWhiteSpaceDataBase(queryKey);
+			queryKey = addKeyPadding(queryKey);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
 			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0) {
 				insertDArray(resultArray, record);
@@ -247,6 +259,8 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			Record *record = getDArray(dataBase->store, i);
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
+			queryKey = stripWhiteSpaceDataBase(queryKey);
+			queryKey = addKeyPadding(queryKey);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
 			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0) {
 				insertDArray(resultArray, record);
@@ -257,54 +271,10 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			Record *record = getDArray(dataBase->store, i);
 			char *queryKeyValue = flattenRange(query);
 			char *queryKey = getKey(queryKeyValue);
+			queryKey = stripWhiteSpaceDataBase(queryKey);
+			queryKey = addKeyPadding(queryKey);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
 			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0) {
-				insertDArray(resultArray, record);
-			}
-		}
-	}
-	return resultArray;
-}
-
-DArray *andRangedQuery(DataBase *dataBase, char *query) {
-	DArray *resultArray = newDArray(dataBase->display);
-	if (strstr(query, "<=")) {
-		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
-			Record *record = getDArray(dataBase->store, i);
-			char *queryKeyValue = flattenRange(query);
-			char *queryKey = getKey(queryKeyValue);
-			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0)) {
-				insertDArray(resultArray, record);
-			}
-		}
-	} else if (strstr(query, ">=")) {
-		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
-			Record *record = getDArray(dataBase->store, i);
-			char *queryKeyValue = flattenRange(query);
-			char *queryKey = getKey(queryKeyValue);
-			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0)) {
-				insertDArray(resultArray, record);
-			}
-		}
-	} else if (strstr(query, "<")) {
-		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
-			Record *record = getDArray(dataBase->store, i);
-			char *queryKeyValue = flattenRange(query);
-			char *queryKey = getKey(queryKeyValue);
-			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0)) {
-				insertDArray(resultArray, record);
-			}
-		}
-	} else {
-		for (int i = 0; i < sizeDArray(dataBase->store); i++) {
-			Record *record = getDArray(dataBase->store, i);
-			char *queryKeyValue = flattenRange(query);
-			char *queryKey = getKey(queryKeyValue);
-			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (!recordKeyValue || (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) > 0)) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -338,6 +308,7 @@ char *findKeyValue(char *source, char *key) {
 	strcpy(token, source);
 	
 	char *keyValue = strtok(token, " ");
+	keyValue = addSpacePadding(key);
 	
 	while (keyValue) {
 		if (strstr(keyValue, key)) {
@@ -370,26 +341,16 @@ DArray *basicQuery(DataBase *dataBase, char *query) {
 	return resultArray;
 }
 
-DArray *andBasicQuery(DataBase *dataBase, char *query) {
-	if (strstr(query, "=")) {
-		query = convertToKeyValue(query);
-	}
-	DArray *resultArray = newDArray(dataBase->display);
-	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
-		Record *record = getDArray(dataBase->store, i);
-		if (!strstr(query, "<>")) {
-			if (strstr(getRecord(record), query)) {
-				insertDArray(resultArray, record);
-			}
-		} else {
-			char *strippedQuery = stripNotEqualOp(query);
-			char *key = getKey(query);
-			if (!strstr(getRecord(record), strippedQuery) && !strstr(getRecord(record), key)) {
-				insertDArray(resultArray, record);
-			}
-		}
-	}
-	return resultArray;
+char *addSpacePadding(char *string) {
+	char *newString = malloc(strlen(string) + 3);
+	sprintf(newString, " %s ", string);
+	return newString;
+}
+
+char *addKeyPadding(char *string) {
+	char *newString = malloc(strlen(string) + 3);
+	sprintf(newString, " %s:", string);
+	return newString;
 }
 
 char *stripNotEqualOp(char *source) {
@@ -412,6 +373,7 @@ int countDataBase(DataBase *dataBase, char *query, int version) {
 			Document *document = getDocumentStore(dataBase->documentStore, i);
 			int docID = getIDDocument(document);
 			char *keyValue = buildKeyValuePair("DocID", docID);
+			keyValue = addSpacePadding(keyValue);
 			DArray *results = searchDataBase(dataBase, keyValue);
 			count += min(sizeDArray(results), version);
 		}
@@ -419,6 +381,7 @@ int countDataBase(DataBase *dataBase, char *query, int version) {
 		return count;
 	}
 	
+	query = addKeyPadding(query);
 	DArray *results = searchDataBase(dataBase, query);
 	return sizeDArray(results);
 }
@@ -444,6 +407,7 @@ int min(int a, int b) {
 }
 
 DArray *sortDataBase(DataBase *dataBase, char *field, int version) {
+	field = addKeyPadding(field);
 	DArray *resultsArray = searchDataBase(dataBase, field);
 	if (version > 0) {
 		resultsArray = filterVersion(resultsArray, dataBase->documentStore, version, dataBase->display);
@@ -473,6 +437,7 @@ DArray *filterVersion(DArray *store, DocumentStore *documentStore, int version, 
 		Document *document = getDocumentStore(documentStore, i);
 		int docID = getIDDocument(document);
 		char *keyValue = buildKeyValuePair("DocID", docID);
+		keyValue = addSpacePadding(keyValue);
 		DArray *resultArray = searchDarray(store, keyValue, display);
 		sortDarray(resultArray, "DocID");
 		sortDarray(resultArray, "vn");

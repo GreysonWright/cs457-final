@@ -8,12 +8,15 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "Integer.h"
 
 struct INTEGER {
 	int isNull;
 	int value;
 };
+
+char *stripWhiteSpaceInteger(char *);
 
 Integer *newInteger(int value) {
 	Integer *newInt = malloc(sizeof *newInt);
@@ -43,6 +46,8 @@ Integer *parseInteger(char *source, char *key) {
 	
 	char *pkey = strtok(token, ":><");
 	char *pval = strtok(0, " ");
+	pkey = stripWhiteSpaceInteger(pkey);
+	pval = stripWhiteSpaceInteger(pval);
 	
 	while (pkey) {
 		if (strcmp(pkey, key) == 0) {
@@ -53,6 +58,18 @@ Integer *parseInteger(char *source, char *key) {
 	}
 	
 	return nullInteger();
+}
+
+char *stripWhiteSpaceInteger(char *token) {
+	long tokenLen = strlen(token);
+	char *newToken = malloc(tokenLen);
+	int count = 0;
+	for (int i = 0; i < tokenLen; i++) {
+		if (!isspace(token[i])) {
+			newToken[count++] = token[i];
+		}
+	}
+	return newToken;
 }
 
 int compareInteger(void *right, void *left) {
