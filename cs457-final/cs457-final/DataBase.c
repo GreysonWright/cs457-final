@@ -373,7 +373,7 @@ DArray *filterVersion(DArray *store, DocumentStore *documentStore, int version, 
 		DArray *resultArray = searchDarray(store, keyValue, display);
 		sortDarray(resultArray, "DocID");
 		sortDarray(resultArray, "vn");
-		for (int j = 0; j < version; j++) {
+		for (int j = 0; j < min(version, sizeDArray(resultArray)); j++) {
 			insertDArray(newResults, getDArray(resultArray, j));
 		}
 	}

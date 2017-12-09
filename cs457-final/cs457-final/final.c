@@ -34,6 +34,7 @@ int main(int argc, const char * argv[]) {
 	line = readLine(queryFile);
 	line = stripWhiteSpace(line);
 	while (!feof(dataFile)) {
+		fprintf(outFile, "%s\n", line);
 		char *collectionCommand = strtok(line, "[");
 		if (strstr(collectionCommand, "final.")) {
 			char *query = strtok(0, "]");
@@ -58,7 +59,7 @@ int main(int argc, const char * argv[]) {
 				displaySelectDataBase(outFile, results, fields);
 			}
 		}
-		
+		fprintf(outFile, "\n");
 		line = readLine(dataFile);
 	}
 	fclose(outFile);
