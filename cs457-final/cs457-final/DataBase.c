@@ -38,6 +38,7 @@ char *addKeyPadding(char *);
 int min(int, int);
 void sortDarray(DArray *, char *);
 char *stripWhiteSpaceDataBase(char *);
+DArray *separateRecords(char *);
 char *removeKeyPadding(char *);
 DArray *findNonExistingField(DataBase *, char *);
 DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
@@ -66,8 +67,8 @@ void insertDataBase(DataBase *dataBase, char *fields) {
 	Record *record = newRecord(fields);
 	char *sysIDString = buildKeyValuePair("sysid", dataBase->fieldCount);
 	char *vnString = buildKeyValuePair("vn", vn);
-	appendFieldRecord(record, sysIDString);
 	appendFieldRecord(record, vnString);
+	appendFieldRecord(record, sysIDString);
 	char *paddedFields = getRecord(record);
 	paddedFields = addSpacePadding(paddedFields);
 	setRecord(record, paddedFields);
@@ -485,10 +486,20 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 		Record *record = getDArray(results, i);
 		char *recordFields = getRecord(record);
 		if (fields == 0) {
-			fprintf(file, "%s", recordFields + 1);
+			DArray *splitFields = separateRecords(getRecord(record));
+			Integer *vnVal = parseInteger(recordFields, "vn");
+			char *vnKeyValue = buildKeyValuePair("vn", getInteger(vnVal));
+			fprintf(file, "%s ", vnKeyValue);
+			for (int j = 0; j < sizeDArray(splitFields); j++) {
+				char *currentField = getDArray(splitFields, j);
+				if (!strstr(currentField, "vn")) {
+					fprintf(file, "%s ", currentField);
+				}
+			}
+//			fprintf(file, "%s", recordFields + 1);
 		} else {
 			DArray *splitFields = separateFields(fields);
-			Integer *vnVal = parseInteger(recordFields, "vn");
+			Integer *vnVal = parseInteger(recordFields + 1, "vn");
 			char *vnKeyValue = buildKeyValuePair("vn", getInteger(vnVal));
 			fprintf(file, "%s ", vnKeyValue);
 			for (int j = 0; j < sizeDArray(splitFields); j++) {
@@ -503,6 +514,20 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 		}
 		fprintf(file, "\n");
 	}
+}
+
+DArray *separateRecords(char *source) {
+	char *token = malloc(strlen(source));
+	strcpy(token, source);
+	
+	DArray *resultArray = newDArray(0);
+	char *keyValue = strtok(token, " ");
+	while (keyValue) {
+		insertDArray(resultArray, keyValue);
+		keyValue = strtok(0, " ");
+	}
+	
+	return resultArray;
 }
 
 char *stripWhiteSpaceDataBase(char *token) {

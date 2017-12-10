@@ -46,10 +46,10 @@ Integer *parseInteger(char *source, char *key) {
 	
 	char *pkey = strtok(token, ":><");
 	char *pval = strtok(0, " ");
-	pkey = stripWhiteSpaceInteger(pkey);
-	pval = stripWhiteSpaceInteger(pval);
 	
 	while (pkey) {
+		pkey = stripWhiteSpaceInteger(pkey);
+		pval = stripWhiteSpaceInteger(pval);
 		if (strcmp(pkey, key) == 0) {
 			return newInteger(atoi(pval));
 		}
