@@ -64,10 +64,10 @@ void insertDataBase(DataBase *dataBase, char *fields) {
 	Document *document = insertDocumentStore(dataBase->documentStore, getInteger(docID));
 	int vn = getCountDocument(document);
 	Record *record = newRecord(fields);
-	char *vnString = buildKeyValuePair("vn", vn);
 	char *sysIDString = buildKeyValuePair("sysid", dataBase->fieldCount);
-	appendFieldRecord(record, vnString);
+	char *vnString = buildKeyValuePair("vn", vn);
 	appendFieldRecord(record, sysIDString);
+	appendFieldRecord(record, vnString);
 	char *paddedFields = getRecord(record);
 	paddedFields = addSpacePadding(paddedFields);
 	setRecord(record, paddedFields);
