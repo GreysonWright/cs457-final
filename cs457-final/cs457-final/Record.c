@@ -44,6 +44,7 @@ void appendFieldRecord(Record *record, char *keyValue) {
 	strcpy(fields, keyValue);
 	strcat(fields, " ");
 	strcat(fields, record->fields);
+	free(record->fields);
 	record->fields = fields;
 }
 
