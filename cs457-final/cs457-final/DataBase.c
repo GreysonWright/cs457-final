@@ -496,7 +496,6 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 					fprintf(file, "%s ", currentField);
 				}
 			}
-//			fprintf(file, "%s", recordFields + 1);
 		} else {
 			DArray *splitFields = separateFields(fields);
 			Integer *vnVal = parseInteger(recordFields + 1, "vn");
