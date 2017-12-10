@@ -39,6 +39,7 @@ int min(int, int);
 void sortDarray(DArray *, char *);
 char *stripWhiteSpaceDataBase(char *);
 char *removeKeyPadding(char *);
+DArray *separateRecords(char *);
 DArray *findNonExistingField(DataBase *, char *);
 DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
 DArray *searchDataBase(DataBase *, char *);
@@ -135,14 +136,32 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 		
 		for (int j = 0; j < sizeDArray(tmp); j++) {
 			Record *record = getDArray(tmp, j);
-			char *searchKeyValue = findKeyValue(getRecord(record), " sysid:");
-			if (!doesDarrayContainKeyValue(resultArray, searchKeyValue)) {
-				insertDArray(resultArray, record);
+			insertDArray(resultArray, record);
+		}
+	}
+	
+	for (int i = 0; i < sizeDArray(resultArray); i++) {
+		Record *iRecord = getDArray(resultArray, i);
+		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
+		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
+			Record *jRecord = getDArray(resultArray, j);
+			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
+			if (compareInteger(isysID, jsysID) == 0 && j != i) {
+				markAsDuplicateRecord(jRecord);
 			}
 		}
 	}
 	
-	return resultArray;
+	DArray *newResultArray = newDArray(dataBase->display);
+	for (int i = 0; i < sizeDArray(resultArray); i++) {
+		Record *record = getDArray(resultArray, i);
+		char *keyValue = findKeyValue(getRecord(record), "sysid");
+		if (getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
+			insertDArray(newResultArray, record);
+		}
+	}
+	
+	return newResultArray;
 }
 
 DArray *findNonExistingField(DataBase *dataBase, char *query) {
@@ -467,7 +486,13 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 		Record *record = getDArray(results, i);
 		char *recordFields = getRecord(record);
 		if (fields == 0) {
-			fprintf(file, "%s", recordFields + 1);
+			DArray *splitFieldsRecord = separateRecords(getRecord(record));
+			for (int j = 0; j < sizeDArray(splitFieldsRecord); j++) {
+				char *field = getDArray(splitFieldsRecord, j);
+				if (!strstr(field, "sysid")) {
+					fprintf(file, "%s ", field);
+				}
+			}
 		} else {
 			DArray *splitFields = separateFields(fields);
 			Integer *vnVal = parseInteger(recordFields, "vn");
@@ -497,4 +522,18 @@ char *stripWhiteSpaceDataBase(char *token) {
 		}
 	}
 	return newToken;
+}
+
+DArray *separateRecords(char *source) {
+	char *token = malloc(strlen(source));
+	strcpy(token, source);
+	
+	DArray *resultArray = newDArray(0);
+	char *keyValue = strtok(token, " ");
+	while (keyValue) {
+		insertDArray(resultArray, keyValue);
+		keyValue = strtok(0, " ");
+	}
+	
+	return resultArray;
 }
