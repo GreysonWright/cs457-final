@@ -39,7 +39,6 @@ int min(int, int);
 void sortDarray(DArray *, char *);
 char *stripWhiteSpaceDataBase(char *);
 char *removeKeyPadding(char *);
-DArray *separateRecords(char *);
 DArray *findNonExistingField(DataBase *, char *);
 DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
 DArray *searchDataBase(DataBase *, char *);
@@ -486,13 +485,7 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 		Record *record = getDArray(results, i);
 		char *recordFields = getRecord(record);
 		if (fields == 0) {
-			DArray *splitFieldsRecord = separateRecords(getRecord(record));
-			for (int j = 0; j < sizeDArray(splitFieldsRecord); j++) {
-				char *field = getDArray(splitFieldsRecord, j);
-				if (!strstr(field, "sysid")) {
-					fprintf(file, "%s ", field);
-				}
-			}
+			fprintf(file, "%s", recordFields + 1);
 		} else {
 			DArray *splitFields = separateFields(fields);
 			Integer *vnVal = parseInteger(recordFields, "vn");
@@ -522,18 +515,4 @@ char *stripWhiteSpaceDataBase(char *token) {
 		}
 	}
 	return newToken;
-}
-
-DArray *separateRecords(char *source) {
-	char *token = malloc(strlen(source));
-	strcpy(token, source);
-	
-	DArray *resultArray = newDArray(0);
-	char *keyValue = strtok(token, " ");
-	while (keyValue) {
-		insertDArray(resultArray, keyValue);
-		keyValue = strtok(0, " ");
-	}
-	
-	return resultArray;
 }
