@@ -51,8 +51,14 @@ Integer *parseInteger(char *source, char *key) {
 		pkey = stripWhiteSpaceInteger(pkey);
 		pval = stripWhiteSpaceInteger(pval);
 		if (strcmp(pkey, key) == 0) {
-			return newInteger(atoi(pval));
+			Integer *integer = newInteger(atoi(pval));
+			free(pkey);
+			free(pval);
+			free(token);
+			return integer;
 		}
+		free(pkey);
+		free(pval);
 		pkey = strtok(0, ":><");
 		pval = strtok(0, " ");
 	}

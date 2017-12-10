@@ -74,6 +74,8 @@ void insertDataBase(DataBase *dataBase, char *fields) {
 	setRecord(record, paddedFields);
 	insertDArray(dataBase->store, record);
 	dataBase->fieldCount++;
+	free(sysIDString);
+	free(vnString);
 }
 
 char *buildKeyValuePair(char *key, int value) {
@@ -496,6 +498,8 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 					fprintf(file, "%s ", currentField);
 				}
 			}
+//			free(vnKeyValue);
+//			free(vnVal);
 		} else {
 			DArray *splitFields = separateFields(fields);
 			Integer *vnVal = parseInteger(recordFields + 1, "vn");
