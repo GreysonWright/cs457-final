@@ -142,40 +142,6 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 		}
 	}
 	
-//	for (int i = 0; i < sizeDArray(keyValues); i++) {
-//		char *keyValue = getDArray(keyValues, i);
-//		char *key = getKey(keyValue);
-//		DArray *missingFields = findNonExistingField(dataBase, key);
-//		for (int j = 0; j < sizeDArray(missingFields); j++) {
-//			Record *record = getDArray(missingFields, j);
-//			char *searchKeyValue = findKeyValue(getRecord(record), "sysid");
-//			if (!doesDarrayContainKeyValue(resultArray, searchKeyValue)) {
-//				insertDArray(resultArray, record);
-//			}
-//		}
-//	}
-	
-//	for (int i = 0; i < sizeDArray(resultArray); i++) {
-//		Record *iRecord = getDArray(resultArray, i);
-//		Integer *isysID = parseInteger(getRecord(iRecord), "sysid");
-//		for (int j = i + 1; j < sizeDArray(resultArray); j++) {
-//			Record *jRecord = getDArray(resultArray, j);
-//			Integer *jsysID = parseInteger(getRecord(jRecord), "sysid");
-//			if (compareInteger(isysID, jsysID) == 0 && j != i) {
-//				markAsDuplicateRecord(jRecord);
-//			}
-//		}
-//	}
-//
-//	DArray *newResultArray = newDArray(dataBase->display);
-//	for (int i = 0; i < sizeDArray(resultArray); i++) {
-//		Record *record = getDArray(resultArray, i);
-//		char *keyValue = findKeyValue(getRecord(record), "sysid");
-//		if (!getIsDuplicateRecord(record) && !doesDarrayContainKeyValue(newResultArray, keyValue)) {
-//			insertDArray(newResultArray, record);
-//		}
-//	}
-	
 	return resultArray;
 }
 
@@ -238,7 +204,14 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			queryKey = stripWhiteSpaceDataBase(queryKey);
 			queryKey = addKeyPadding(queryKey);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) <= 0) {
+			Integer *recordValue = 0;
+			Integer *queryValue = 0;
+			if (recordKeyValue) {
+				char *key = removeKeyPadding(queryKey);
+				recordValue = parseInteger(recordKeyValue, key);
+				queryValue = parseInteger(queryKeyValue, key);
+			}
+			if (recordValue && queryValue && compareInteger(recordValue, queryValue) <= 0) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -250,7 +223,14 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			queryKey = stripWhiteSpaceDataBase(queryKey);
 			queryKey = addKeyPadding(queryKey);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) >= 0) {
+			Integer *recordValue = 0;
+			Integer *queryValue = 0;
+			if (recordKeyValue) {
+				char *key = removeKeyPadding(queryKey);
+				recordValue = parseInteger(recordKeyValue, key);
+				queryValue = parseInteger(queryKeyValue, key);
+			}
+			if (recordValue && queryValue && compareInteger(recordValue, queryValue) >= 0) {
 				insertDArray(resultArray, record);
 			}
 		}
@@ -262,7 +242,14 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 			queryKey = stripWhiteSpaceDataBase(queryKey);
 			queryKey = addKeyPadding(queryKey);
 			char *recordKeyValue = findKeyValue(getRecord(record), queryKey);
-			if (recordKeyValue && strcmp(recordKeyValue, queryKeyValue) < 0) {
+			Integer *recordValue = 0;
+			Integer *queryValue = 0;
+			if (recordKeyValue) {
+				char *key = removeKeyPadding(queryKey);
+				recordValue = parseInteger(recordKeyValue, key);
+				queryValue = parseInteger(queryKeyValue, key);
+			}
+			if (recordValue && queryValue && compareInteger(recordValue, queryValue) < 0) {
 				insertDArray(resultArray, record);
 			}
 		}
