@@ -121,7 +121,7 @@ int isAndQuery(char *query) {
 
 DArray *andQuery(DataBase *dataBase, char *query) {
 	DArray *resultArray = newDArray(dataBase->display);
-	char *token = malloc(strlen(query));
+	char *token = malloc(strlen(query) + 1);
 	strcpy(token, query);
 	
 	DArray *keyValues = separateFields(query);
@@ -179,7 +179,7 @@ DArray *findNonExistingField(DataBase *dataBase, char *query) {
 }
 
 DArray *separateFields(char *source) {
-	char *token = malloc(strlen(source));
+	char *token = malloc(strlen(source) + 1);
 	strcpy(token, source);
 	
 	DArray *resultArray = newDArray(0);
@@ -203,7 +203,7 @@ int doesDarrayContainKeyValue(DArray *darray, char *keyValue) {
 }
 
 char *convertToKeyValue(char *source) {
-	char *keyValue = malloc(strlen(source));
+	char *keyValue = malloc(strlen(source) + 1);
 	int count = 0;
 	for (int i = 0; i < strlen(source); i++) {
 		if (source[i] == '=') {
@@ -300,7 +300,7 @@ DArray *rangedQuery(DataBase *dataBase, char *query) {
 char *removeKeyPadding(char *string) {
 	long length = strlen(string);
 	int count = 0;
-	char *newString = malloc(length);
+	char *newString = malloc(length + 1);
 	for (int i = 0; i < length; i++) {
 		if (string[i] != ':' && !isspace(string[i])) {
 			newString[count++] = string[i];
@@ -310,7 +310,7 @@ char *removeKeyPadding(char *string) {
 }
 
 char *flattenRange(char *source) {
-	char *keyValue = malloc(strlen(source));
+	char *keyValue = malloc(strlen(source) + 1);
 	int count = 0;
 	for (int i = 0; i < strlen(source); i++) {
 		if (source[i] == '>' || source[i] == '<') {
@@ -323,7 +323,7 @@ char *flattenRange(char *source) {
 }
 
 char *getKey(char *source) {
-	char *token = malloc(strlen(source));
+	char *token = malloc(strlen(source) + 1);
 	strcpy(token, source);
 	
 	char *key = strtok(token, ":");
@@ -331,7 +331,7 @@ char *getKey(char *source) {
 }
 
 char *findKeyValue(char *source, char *key) {
-	char *token = malloc(strlen(source));
+	char *token = malloc(strlen(source) + 1);
 	strcpy(token, source);
 	
 	char *keyValue = strtok(token, " ");
@@ -381,7 +381,7 @@ char *addKeyPadding(char *string) {
 }
 
 char *stripNotEqualOp(char *source) {
-	char *keyValue = malloc(strlen(source));
+	char *keyValue = malloc(strlen(source) + 1);
 	int count = 0;
 	for (int i = 0; i < strlen(source); i++) {
 		if (source[i] == '<') {
@@ -520,7 +520,7 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 }
 
 DArray *separateRecords(char *source) {
-	char *token = malloc(strlen(source));
+	char *token = malloc(strlen(source) + 1);
 	strcpy(token, source);
 	
 	DArray *resultArray = newDArray(0);
@@ -535,7 +535,7 @@ DArray *separateRecords(char *source) {
 
 char *stripWhiteSpaceDataBase(char *token) {
 	long tokenLen = strlen(token);
-	char *newToken = malloc(tokenLen);
+	char *newToken = malloc(tokenLen + 1);
 	int count = 0;
 	for (int i = 0; i < tokenLen; i++) {
 		if (!isspace(token[i])) {

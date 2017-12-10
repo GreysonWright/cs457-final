@@ -28,7 +28,7 @@ int compareRecord(void *left, void *right) {
 
 void displayRecord(FILE *file, void *record) {
 	Record *rec = record;
-	printf("%s", getRecord(rec));
+	fprintf(file, "%s", getRecord(rec));
 }
 
 char *getRecord(Record *record) {

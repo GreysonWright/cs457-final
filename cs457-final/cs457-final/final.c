@@ -80,7 +80,7 @@ int main(int argc, const char * argv[]) {
 
 char *stripWhiteSpace(char *token) {
 	long tokenLen = strlen(token);
-	char *newToken = malloc(tokenLen);
+	char *newToken = malloc(tokenLen + 1);
 	int count = 0;
 	for (int i = 0; i < tokenLen; i++) {
 		if (!isspace(token[i])) {

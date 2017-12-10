@@ -41,7 +41,7 @@ void setInteger(Integer *integer, int value) {
 }
 
 Integer *parseInteger(char *source, char *key) {
-	char *token = malloc(strlen(source));
+	char *token = malloc(strlen(source) + 1);
 	strcpy(token, source);
 	
 	char *pkey = strtok(token, ":><");
