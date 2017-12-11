@@ -43,7 +43,8 @@ DArray *separateRecords(char *);
 char *removeKeyPadding(char *);
 DArray *findNonExistingField(DataBase *, char *);
 DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
-DArray *searchDataBase(DataBase *, char *, int);
+DArray *searchDataBase(DataBase *, char *);
+DArray *countSearch(DataBase *, char *, int);
 DArray *searchDarray(DArray *, char *, void (*)(FILE *, void *));
 DArray *splitFields(Record *);
 DArray *andQuery(DataBase *, char *);
@@ -415,11 +416,11 @@ char *stripNotEqualOp(char *source) {
 }
 
 int countDataBase(DataBase *dataBase, char *query, int version) {
-	DArray *results = searchDataBase(dataBase, query, version);
+	DArray *results = countSearch(dataBase, query, version);
 	return sizeDArray(results);
 }
 
-DArray *searchDataBase(DataBase *dataBase, char *query, int version) {
+DArray *countSearch(DataBase *dataBase, char *query, int version) {
 	query = addKeyPadding(query);
 	DArray *results = newDArray(dataBase->display);
 	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
@@ -442,6 +443,25 @@ DArray *searchDataBase(DataBase *dataBase, char *query, int version) {
 	return results;
 }
 
+int min(int a, int b) {
+	return a < b ? a : b;
+}
+
+DArray *sortDataBase(DataBase *dataBase, char *field, int version) {
+	field = addKeyPadding(field);
+	DArray *resultsArray = searchDataBase(dataBase, field);
+	if (version > 0) {
+		resultsArray = filterVersion(resultsArray, dataBase->documentStore, version, dataBase->display);
+	}
+	sortDarrayAscending(resultsArray, field);
+	return resultsArray;
+}
+
+DArray *searchDataBase(DataBase *dataBase, char *query) {
+	DArray *resultArray = searchDarray(dataBase->store, query, dataBase->display);
+	return resultArray;
+}
+
 DArray *searchDarray(DArray *darray, char *query, void (*display)(FILE *, void *)) {
 	DArray *resultArray = newDArray(display);
 	for (int i = 0; i < sizeDArray(darray); i++) {
@@ -451,17 +471,6 @@ DArray *searchDarray(DArray *darray, char *query, void (*display)(FILE *, void *
 		}
 	}
 	return resultArray;
-}
-
-int min(int a, int b) {
-	return a < b ? a : b;
-}
-
-DArray *sortDataBase(DataBase *dataBase, char *field, int version) {
-	field = addKeyPadding(field);
-	DArray *resultsArray = searchDataBase(dataBase, field, version);
-	sortDarrayAscending(resultsArray, field);
-	return resultsArray;
 }
 
 void sortDarray(DArray *darray, char *field) {
