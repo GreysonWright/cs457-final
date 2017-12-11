@@ -225,9 +225,10 @@ int doesDarrayContainKeyValue(DArray *darray, char *keyValue) {
 }
 
 char *convertToKeyValue(char *source) {
-	char *keyValue = malloc(strlen(source) + 1);
+	long length = strlen(source);
+	char *keyValue = malloc(length + 1);
 	int count = 0;
-	for (int i = 0; i < strlen(source); i++) {
+	for (int i = 0; i < length; i++) {
 		if (source[i] == '=') {
 			keyValue[count++] = ':';
 		} else {
@@ -332,9 +333,10 @@ char *removeKeyPadding(char *string) {
 }
 
 char *flattenRange(char *source) {
-	char *keyValue = malloc(strlen(source) + 1);
+	int length = strlen(source);
+	char *keyValue = malloc(length + 1);
 	int count = 0;
-	for (int i = 0; i < strlen(source); i++) {
+	for (int i = 0; i < length; i++) {
 		if (source[i] == '>' || source[i] == '<') {
 			keyValue[count++] = ':';
 		} else if (source[i] != '=') {
@@ -403,9 +405,10 @@ char *addKeyPadding(char *string) {
 }
 
 char *stripNotEqualOp(char *source) {
-	char *keyValue = malloc(strlen(source) + 1);
+	long length = strlen(source);
+	char *keyValue = malloc(length + 1);
 	int count = 0;
-	for (int i = 0; i < strlen(source); i++) {
+	for (int i = 0; i < length; i++) {
 		if (source[i] == '<') {
 			keyValue[count++] = ':';
 		} else if (source[i] != '>') {

@@ -17,15 +17,11 @@
 
 char *stripWhiteSpace(char *);
 int parseVersion(char *);
-int isQuery(char *);
-int isRangedQueryInterpreter(char *);
-int countEmptyBrackets(char *);
-int countBrackets(char *);
 char *getBracketContents(char *, int);
 
 int main(int argc, const char * argv[]) {
 	DataBase *dataBase = newDataBase(displayRecord);
-	FILE *dataFile = fopen("/Users/gwright/Git/cs457-final/cs457-final/cs457-final/data.txt", "r");
+	FILE *dataFile = fopen("data.txt", "r");
 	char *line = readLine(dataFile);
 	while (!feof(dataFile)) {
 		insertDataBase(dataBase, line);
@@ -34,8 +30,8 @@ int main(int argc, const char * argv[]) {
 	fclose(dataFile);
 	line = 0;
 	
-	FILE *queryFile = fopen("/Users/gwright/Git/cs457-final/cs457-final/cs457-final/queries.txt", "r");
-	FILE *outFile = fopen("/Users/gwright/Git/cs457-final/cs457-final/cs457-final/gwright.txt", "w+");
+	FILE *queryFile = fopen("queries.txt", "r");
+	FILE *outFile = fopen("gwright.txt", "w+");
 	line = readLine(queryFile);
 	while (!feof(dataFile)) {
 		fprintf(outFile, "%s\n", line);
@@ -97,22 +93,11 @@ char *stripWhiteSpace(char *token) {
 	return newToken;
 }
 
-int isQuery(char *query) {
-	if (!isRangedQueryInterpreter(query) && !strstr(query, "=")) {
-		return 0;
-	}
-	return 1;
-}
-
-int isRangedQueryInterpreter(char *query) {
-	return !strstr(query, "<>") && (strstr(query, ">") || strstr(query, "<"));
-}
-
 int parseVersion(char *versionString) {
-	if (strlen(versionString) == 0) {
+	if (versionString == 0) {
 		return 1;
 	}
-	if (strcmp(versionString, ")") == 0) {
+	if (strlen(versionString) == 0) {
 		return 0;
 	}
 	return atoi(versionString);
@@ -121,7 +106,7 @@ int parseVersion(char *versionString) {
 char *getBracketContents(char *source, int index) {
 	long length = strlen(source);
 	char *string = malloc(length + 1);
-	char *contents = "";
+	char *contents = 0;
 	strcpy(string, source);
 	int count = 0;
 	
@@ -136,24 +121,4 @@ char *getBracketContents(char *source, int index) {
 		}
 	}
 	return contents;
-}
-
-int countEmptyBrackets(char *string) {
-	int count = 0;
-	for (int i = 0; i < strlen(string) - 1; i++) {
-		if (string[i] == '[' && string[i + 1] == ']') {
-			count++;
-		}
-	}
-	return count;
-}
-
-int countBrackets(char *string) {
-	int count = 0;
-	for (int i = 0; i < strlen(string); i++) {
-		if (string[i] == '[') {
-			count++;
-		}
-	}
-	return count;
 }
