@@ -32,7 +32,6 @@
 /* Begin PBXFileReference section */
 		2E7415BE1FD87F0F0015ACD9 /* DataBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DataBase.h; sourceTree = "<group>"; };
 		2E7415BF1FD87F0F0015ACD9 /* DataBase.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = DataBase.c; sourceTree = "<group>"; };
-		2E83B9121FDF128900F9BD18 /* gwright.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = gwright.txt; sourceTree = "<group>"; };
 		2E83B9131FDF128900F9BD18 /* data.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = data.txt; sourceTree = "<group>"; };
 		2E83B9141FDF128900F9BD18 /* queries.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = queries.txt; sourceTree = "<group>"; };
 		2E9DC6791FD34C5C0099333D /* cs457-final */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cs457-final"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -98,7 +97,6 @@
 				2E9DC67C1FD34C5C0099333D /* final.c */,
 				2E83B9131FDF128900F9BD18 /* data.txt */,
 				2E83B9141FDF128900F9BD18 /* queries.txt */,
-				2E83B9121FDF128900F9BD18 /* gwright.txt */,
 			);
 			path = "cs457-final";
 			sourceTree = "<group>";
