@@ -18,7 +18,6 @@ vn:1 DocID:10 Age:54
 vn:1 DocID:1 Age:98 
 vn:1 DocID:7 Age:77 
 vn:1 DocID:555 Age:76 
-vn:1 DocID:666 Age:97 
 vn:1 DocID:66 Age:91 
 vn:1 DocID:780 Age:56 
 vn:1 DocID:43 
@@ -26,19 +25,13 @@ vn:1 DocID:620 Age:78
 
 final.query([Dept=4, Age>35], [DocID, Age], [])
 vn:4 DocID:4 Age:36 
-vn:4 DocID:4 Age:36 
-vn:3 DocID:4 Age:35 
 vn:2 DocID:4 Age:36 
-vn:2 DocID:4 Age:36 
-vn:1 DocID:40 
-vn:1 DocID:4 Age:35 
 vn:1 DocID:1 Age:98 
+vn:1 DocID:40 
 vn:1 DocID:43 
 vn:1 DocID:10 Age:54 
-vn:1 DocID:1 Age:98 
 vn:1 DocID:7 Age:77 
 vn:1 DocID:555 Age:76 
-vn:1 DocID:666 Age:97 
 vn:1 DocID:66 Age:91 
 vn:1 DocID:780 Age:56 
 vn:1 DocID:620 Age:78 
