@@ -74,8 +74,8 @@ void insertDataBase(DataBase *dataBase, char *fields) {
 	setRecord(record, paddedFields);
 	insertDArray(dataBase->store, record);
 	dataBase->fieldCount++;
-	free(sysIDString);
-	free(vnString);
+//	free(sysIDString);
+//	free(vnString);
 }
 
 char *buildKeyValuePair(char *key, int value) {

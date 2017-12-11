@@ -1,23 +1,23 @@
 final.query([Dept=4],[sysid,DocID,Age])
-vn:4 sysid:18 DocID:4 Age:0 
+vn:4 sysid:18 DocID:4 Age:36 
 vn:1 sysid:3 DocID:40 
 vn:1 sysid:7 DocID:1 Age:98 
 vn:1 sysid:31 DocID:43 
 
 final.query([Dept=4], [sysid, DocID, Age], [2])
-vn:4 sysid:18 DocID:4 Age:0 
-vn:3 sysid:13 DocID:4 Age:0 
+vn:4 sysid:18 DocID:4 Age:36 
+vn:3 sysid:13 DocID:4 Age:35 
 vn:1 sysid:3 DocID:40 
 vn:1 sysid:7 DocID:1 Age:98 
 vn:1 sysid:31 DocID:43 
 
 final.query([Dept=4, Age>35], [DocID, Age])
-vn:4 DocID:4 Age:0 
+vn:4 DocID:4 Age:36 
 vn:1 DocID:1 Age:98 
 
 final.query([Dept=4, Age>35], [DocID, Age], [])
-vn:4 DocID:4 Age:0 
-vn:2 DocID:4 Age:0 
+vn:4 DocID:4 Age:36 
+vn:2 DocID:4 Age:36 
 vn:1 DocID:1 Age:98 
 
 final.query([age=35], [DocID])
@@ -37,9 +37,9 @@ vn:1 sysid:15 Age:77 Gender:1 DocID:7 City:1
 vn:1 sysid:19 DocID:555 City:1 Age:76 Salary:170000 
 vn:1 sysid:23 DocID:780 Age:56 
 vn:1 sysid:5 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
+vn:4 sysid:18 Dept:4 DocID:4 Salary:181800 Age:36 
 vn:1 sysid:28 DocID:570 City:1 Age:34 Gender:2 
 vn:1 sysid:20 Age:28 State:15 DocID:55 Spec1:76 
-vn:4 sysid:18 Dept:4 DocID:4 Salary:181800 Age:36 
 
 final.sort([Age], [3])
 vn:1 sysid:7 Dept:4 Age:98 DocID:1 
@@ -50,11 +50,11 @@ vn:1 sysid:15 Age:77 Gender:1 DocID:7 City:1
 vn:1 sysid:19 DocID:555 City:1 Age:76 Salary:170000 
 vn:1 sysid:23 DocID:780 Age:56 
 vn:1 sysid:5 DocID:10 Spec1:66 Salary:56300 City:1 Age:54 Gender:1 
+vn:4 sysid:18 Dept:4 DocID:4 Salary:181800 Age:36 
+vn:2 sysid:12 Dept:4 DocID:4 Salary:181800 Age:36 
+vn:3 sysid:13 Dept:4 DocID:4 Salary:185800 Age:35 
 vn:1 sysid:28 DocID:570 City:1 Age:34 Gender:2 
 vn:1 sysid:20 Age:28 State:15 DocID:55 Spec1:76 
-vn:4 sysid:18 Dept:4 DocID:4 Salary:181800 Age:36 
-vn:3 sysid:13 Dept:4 DocID:4 Salary:185800 Age:35 
-vn:2 sysid:12 Dept:4 DocID:4 Salary:181800 Age:36 
 
 final.query([], [sysid, Gender, Salary, City])
 vn:4 sysid:18 Dept:4 DocID:4 Salary:181800 Age:36 

@@ -52,13 +52,13 @@ Integer *parseInteger(char *source, char *key) {
 		pval = stripWhiteSpaceInteger(pval);
 		if (strcmp(pkey, key) == 0) {
 			Integer *integer = newInteger(atoi(pval));
-			free(pkey);
-			free(pval);
-			free(token);
+//			free(pkey);
+//			free(pval);
+//			free(token);
 			return integer;
 		}
-		free(pkey);
-		free(pval);
+//		free(pkey);
+//		free(pval);
 		pkey = strtok(0, ":><");
 		pval = strtok(0, " ");
 	}
@@ -67,6 +67,9 @@ Integer *parseInteger(char *source, char *key) {
 }
 
 char *stripWhiteSpaceInteger(char *token) {
+	if (token == 0) {
+		return 0;
+	}
 	long tokenLen = strlen(token);
 	char *newToken = malloc(tokenLen);
 	int count = 0;
