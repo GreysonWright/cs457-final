@@ -163,7 +163,25 @@ DArray *andQuery(DataBase *dataBase, char *query) {
 		}
 	}
 	
-	return newResultArray;
+	for (int i = 0; i < sizeDArray(resultArray); i++) {
+		Record *record = getDArray(resultArray, i);
+		int shouldAddField = 0;
+		for (int j = 0; j < sizeDArray(keyValues); j++) {
+			char *keyValue = getDArray(keyValues, j);
+			keyValue = convertToKeyValue(keyValue);
+			char *key = getKey(keyValue);
+			key = addKeyPadding(key);
+			if (!strstr(getRecord(record), key)) {
+				shouldAddField = 1;
+				break;
+			}
+		}
+		if (shouldAddField) {
+			insertDArray(newResultArray, record);
+		}
+	}
+	
+	return resultArray;
 }
 
 DArray *findNonExistingField(DataBase *dataBase, char *query) {
