@@ -32,17 +32,23 @@ int main(int argc, const char * argv[]) {
 	FILE *queryFile = fopen("/Users/gwright/Git/cs457-final/cs457-final/cs457-final/queries.txt", "r");
 	FILE *outFile = fopen("/Users/gwright/Git/cs457-final/cs457-final/cs457-final/gwright.txt", "w+");
 	line = readLine(queryFile);
-	line = stripWhiteSpace(line);
 	while (!feof(dataFile)) {
 		fprintf(outFile, "%s\n", line);
+		if (!strstr(line, "insert")) {
+			line = stripWhiteSpace(line);
+		}
 		char *collectionCommand = strtok(line, "[");
 		if (strstr(collectionCommand, "final.")) {
 			char *query = strtok(0, "]");
-			if (strstr(query, "[")) {
+			if (query && strstr(query, "[")) {
 				query = 0;
 			}
+			
 			if (strstr(collectionCommand, "insert")) {
-				insertDataBase(dataBase, query);
+				char *string = collectionCommand;
+				(void)strtok(string, "(");
+				char *records = strtok(0, ")");
+				insertDataBase(dataBase, records);
 			} else if (strstr(collectionCommand, "count")) {
 				(void)strtok(0, "[");
 				char *versionString = strtok(0, "]");
@@ -68,7 +74,11 @@ int main(int argc, const char * argv[]) {
 				int version = parseVersion(versionString);
 				results = sortDataBase(dataBase, query, version);
 				displaySelectDataBase(outFile, results, 0);
+			} else {
+				fprintf(outFile, "Operation not supported.\n");
 			}
+		} else {
+			fprintf(outFile, "Operation not supported.\n");
 		}
 		fprintf(outFile, "\n");
 		line = readLine(dataFile);

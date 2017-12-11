@@ -1,0 +1,6 @@
+final.count([Dept], [])
+count_Dept:18
+
+final.count([Dept])
+count_Dept:12
+

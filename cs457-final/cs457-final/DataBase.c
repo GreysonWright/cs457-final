@@ -43,7 +43,7 @@ DArray *separateRecords(char *);
 char *removeKeyPadding(char *);
 DArray *findNonExistingField(DataBase *, char *);
 DArray *filterVersion(DArray *, DocumentStore *, int, void (*)(FILE *, void *));
-DArray *searchDataBase(DataBase *, char *);
+DArray *searchDataBase(DataBase *, char *, int);
 DArray *searchDarray(DArray *, char *, void (*)(FILE *, void *));
 DArray *splitFields(Record *);
 DArray *andQuery(DataBase *, char *);
@@ -415,28 +415,31 @@ char *stripNotEqualOp(char *source) {
 }
 
 int countDataBase(DataBase *dataBase, char *query, int version) {
-	if (version > 0) {
-		int count = 0;
-		for (int i = 0; i < sizeDocumentStore(dataBase->documentStore); i++) {
-			Document *document = getDocumentStore(dataBase->documentStore, i);
-			int docID = getIDDocument(document);
-			char *keyValue = buildKeyValuePair("DocID", docID);
-			keyValue = addSpacePadding(keyValue);
-			DArray *results = searchDataBase(dataBase, keyValue);
-			count += min(sizeDArray(results), version);
-		}
-		
-		return count;
-	}
-	
-	query = addKeyPadding(query);
-	DArray *results = searchDataBase(dataBase, query);
+	DArray *results = searchDataBase(dataBase, query, version);
 	return sizeDArray(results);
 }
 
-DArray *searchDataBase(DataBase *dataBase, char *query) {
-	DArray *resultArray = searchDarray(dataBase->store, query, dataBase->display);
-	return resultArray;
+DArray *searchDataBase(DataBase *dataBase, char *query, int version) {
+	query = addKeyPadding(query);
+	DArray *results = newDArray(dataBase->display);
+	for (int i = 0; i < sizeDArray(dataBase->store); i++) {
+		Record *record = getDArray(dataBase->store, i);
+		if (!strstr(query, "<>")) {
+			if (strstr(getRecord(record), query)) {
+				insertDArray(results, record);
+			}
+		} else {
+			char *strippedQuery = stripNotEqualOp(query);
+			if (!strstr(getRecord(record), strippedQuery)) {
+				insertDArray(results, record);
+			}
+		}
+	}
+	if (version > 0) {
+		results = filterVersion(results, dataBase->documentStore, version, dataBase->display);
+	}
+	sortDarray(results, "vn");
+	return results;
 }
 
 DArray *searchDarray(DArray *darray, char *query, void (*display)(FILE *, void *)) {
@@ -456,10 +459,7 @@ int min(int a, int b) {
 
 DArray *sortDataBase(DataBase *dataBase, char *field, int version) {
 	field = addKeyPadding(field);
-	DArray *resultsArray = searchDataBase(dataBase, field);
-	if (version > 0) {
-		resultsArray = filterVersion(resultsArray, dataBase->documentStore, version, dataBase->display);
-	}
+	DArray *resultsArray = searchDataBase(dataBase, field, version);
 	sortDarrayAscending(resultsArray, field);
 	return resultsArray;
 }
