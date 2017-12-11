@@ -37,6 +37,7 @@ char *addSpacePadding(char *);
 char *addKeyPadding(char *);
 int min(int, int);
 void sortDarray(DArray *, char *);
+void sortDarrayAscending(DArray *, char *);
 char *stripWhiteSpaceDataBase(char *);
 DArray *separateRecords(char *);
 char *removeKeyPadding(char *);
@@ -48,8 +49,6 @@ DArray *splitFields(Record *);
 DArray *andQuery(DataBase *, char *);
 DArray *rangedQuery(DataBase *, char *);
 DArray *basicQuery(DataBase *, char*);
-DArray *andRangedQuery(DataBase *, char *);
-DArray *andBasicQuery(DataBase *, char *);
 
 DataBase *newDataBase(void (*display)(FILE *file, void *value)) {
 	DataBase *dataBase = malloc(sizeof *dataBase);
@@ -74,8 +73,6 @@ void insertDataBase(DataBase *dataBase, char *fields) {
 	setRecord(record, paddedFields);
 	insertDArray(dataBase->store, record);
 	dataBase->fieldCount++;
-//	free(sysIDString);
-//	free(vnString);
 }
 
 char *buildKeyValuePair(char *key, int value) {
@@ -463,7 +460,7 @@ DArray *sortDataBase(DataBase *dataBase, char *field, int version) {
 	if (version > 0) {
 		resultsArray = filterVersion(resultsArray, dataBase->documentStore, version, dataBase->display);
 	}
-	sortDarray(resultsArray, field);
+	sortDarrayAscending(resultsArray, field);
 	return resultsArray;
 }
 
@@ -476,6 +473,22 @@ void sortDarray(DArray *darray, char *field) {
 			Record *nextRecord = getDArray(darray, j + 1);
 			Integer *nextValue = parseInteger(getRecord(nextRecord), key);
 			if (compareInteger(nextValue, currentValue) > 0) {
+				setDArray(darray, j, nextRecord);
+				setDArray(darray, j + 1, currentRecord);
+			}
+		}
+	}
+}
+
+void sortDarrayAscending(DArray *darray, char *field) {
+	for (int i = 0; i < sizeDArray(darray) - 1; i++) {
+		for (int j = 0; j < sizeDArray(darray) - i - 1; j++) {
+			Record *currentRecord = getDArray(darray, j);
+			char *key = removeKeyPadding(field);
+			Integer *currentValue = parseInteger(getRecord(currentRecord), key);
+			Record *nextRecord = getDArray(darray, j + 1);
+			Integer *nextValue = parseInteger(getRecord(nextRecord), key);
+			if (compareInteger(nextValue, currentValue) < 0) {
 				setDArray(darray, j, nextRecord);
 				setDArray(darray, j + 1, currentRecord);
 			}
@@ -522,8 +535,6 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 					fprintf(file, "%s ", currentField);
 				}
 			}
-//			free(vnKeyValue);
-//			free(vnVal);
 		} else {
 			DArray *splitFields = separateFields(fields);
 			Integer *vnVal = parseInteger(recordFields + 1, "vn");
