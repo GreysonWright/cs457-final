@@ -1,4 +1,8 @@
 final.query([Dept=4], [sysid, DocID, Age])
+vn:4 sysid:18 DocID:4 Age:36 
+vn:1 sysid:3 DocID:40 
+vn:1 sysid:7 DocID:1 Age:98 
+vn:1 sysid:31 DocID:43 
 
 final.query([Dept=4], [sysid, DocID, Age], [2])
 vn:4 sysid:18 DocID:4 Age:36 
@@ -21,21 +25,20 @@ vn:1 DocID:620 Age:78
 
 final.query([Dept=4, Age>35], [DocID, Age], [])
 vn:4 DocID:4 Age:36 
-vn:2 DocID:4 Age:36 
-vn:1 DocID:1 Age:98 
 vn:1 DocID:40 
-vn:1 DocID:43 
 vn:1 DocID:10 Age:54 
+vn:1 DocID:1 Age:98 
 vn:1 DocID:7 Age:77 
 vn:1 DocID:555 Age:76 
 vn:1 DocID:66 Age:91 
 vn:1 DocID:780 Age:56 
+vn:1 DocID:43 
 vn:1 DocID:620 Age:78 
 
 final.query([age=35], [DocID])
 
 final.count([Dept], [])
-count_Dept:18
+count_Dept:12
 
 final.count([Dept])
 count_Dept:12
@@ -69,6 +72,33 @@ vn:1 sysid:21 State:7 Age:97 Spec1:56 Gender:2 Salary:181800 Dept:2 DocID:666 Ci
 vn:1 sysid:7 Dept:4 Age:98 DocID:1 
 
 final.query([], [sysid, Gender, Salary, City])
+vn:4 sysid:18 Salary:181800 
+vn:3 sysid:10 Salary:96700 City:4 
+vn:2 sysid:6 Gender:2 Salary:72800 
+vn:2 sysid:2 Salary:66200 City:2 
+vn:2 sysid:24 Gender:2 
+vn:2 sysid:32 Gender:2 Salary:47300 
+vn:1 sysid:3 Gender:2 Salary:84600 
+vn:1 sysid:5 Gender:1 Salary:56300 City:1 
+vn:1 sysid:7 
+vn:1 sysid:11 
+vn:1 sysid:14 Gender:2 Salary:148500 
+vn:1 sysid:15 Gender:1 City:1 
+vn:1 sysid:16 
+vn:1 sysid:17 Gender:1 City:2 
+vn:1 sysid:20 
+vn:1 sysid:21 Gender:2 Salary:181800 City:2 
+vn:1 sysid:22 Salary:130300 
+vn:1 sysid:23 
+vn:1 sysid:25 
+vn:1 sysid:26 Gender:2 Salary:122000 
+vn:1 sysid:27 Salary:176600 
+vn:1 sysid:28 Gender:2 City:1 
+vn:1 sysid:29 
+vn:1 sysid:31 
+vn:1 sysid:33 Gender:2 
+
+final.query([], [], [])
 vn:4 sysid:18 Dept:4 DocID:4 Salary:181800 Age:36 
 vn:3 sysid:10 DocID:30 City:4 Salary:96700 Dept:3 
 vn:2 sysid:6 DocID:50 Spec1:61 Gender:2 Salary:72800 

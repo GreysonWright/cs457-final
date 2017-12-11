@@ -17,6 +17,11 @@
 
 char *stripWhiteSpace(char *);
 int parseVersion(char *);
+int isQuery(char *);
+int isRangedQueryInterpreter(char *);
+int countEmptyBrackets(char *);
+int countBrackets(char *);
+char *getBracketContents(char *, int);
 
 int main(int argc, const char * argv[]) {
 	DataBase *dataBase = newDataBase(displayRecord);
@@ -37,43 +42,35 @@ int main(int argc, const char * argv[]) {
 		if (!strstr(line, "insert")) {
 			line = stripWhiteSpace(line);
 		}
+		char *fullLine = malloc(strlen(line) + 1);
+		strcpy(fullLine, line);
 		char *collectionCommand = strtok(line, "[");
 		if (strstr(collectionCommand, "final.")) {
-			char *query = strtok(0, "]");
-			if (query && strstr(query, "[")) {
-				query = 0;
-			}
-			
 			if (strstr(collectionCommand, "insert")) {
 				char *string = collectionCommand;
 				(void)strtok(string, "(");
 				char *records = strtok(0, ")");
 				insertDataBase(dataBase, records);
 			} else if (strstr(collectionCommand, "count")) {
-				(void)strtok(0, "[");
-				char *versionString = strtok(0, "]");
+				char *field = getBracketContents(fullLine, 0);
+				char *versionString = getBracketContents(fullLine, 1);
 				int version = parseVersion(versionString);
-				int count = countDataBase(dataBase, query, version);
-				fprintf(outFile, "count_%s:%d\n", query, count);
+				int count = countDataBase(dataBase, field, version);
+				fprintf(outFile, "count_%s:%d\n", field, count);
 			} else if (strstr(collectionCommand, "query")) {
-				DArray *results = newDArray(0);
-				(void)strtok(0, "[");
-				char *fields = strtok(0, "]");
-				if (fields && strstr(fields, ")")) {
-					fields = 0;
-				}
-				(void)strtok(0, "[");
-				char *versionString = strtok(0, "]");
+				fullLine = fullLine + strlen(line);
+				char *query = getBracketContents(fullLine, 0);
+				char *fields = getBracketContents(fullLine, 1);
+				char *versionString = getBracketContents(fullLine, 2);
 				int version = parseVersion(versionString);
-				results = queryDataBase(dataBase, query, version);
+				DArray *results = queryDataBase(dataBase, query, version);
 				displaySelectDataBase(outFile, results, fields);
 			} else if (strstr(collectionCommand, "sort")) {
-				DArray *results = newDArray(0);
-				(void)strtok(0, "[");
-				char *versionString = strtok(0, "]");
+				char *field = getBracketContents(fullLine, 0);
+				char *versionString = getBracketContents(fullLine, 1);
 				int version = parseVersion(versionString);
-				results = sortDataBase(dataBase, query, version);
-				displaySelectDataBase(outFile, results, 0);
+				DArray *results = sortDataBase(dataBase, field, version);
+				displaySelectDataBase(outFile, results, "");
 			} else {
 				fprintf(outFile, "Operation not supported.\n");
 			}
@@ -100,12 +97,63 @@ char *stripWhiteSpace(char *token) {
 	return newToken;
 }
 
+int isQuery(char *query) {
+	if (!isRangedQueryInterpreter(query) && !strstr(query, "=")) {
+		return 0;
+	}
+	return 1;
+}
+
+int isRangedQueryInterpreter(char *query) {
+	return !strstr(query, "<>") && (strstr(query, ">") || strstr(query, "<"));
+}
+
 int parseVersion(char *versionString) {
-	if (versionString == 0) {
+	if (strlen(versionString) == 0) {
 		return 1;
 	}
 	if (strcmp(versionString, ")") == 0) {
 		return 0;
 	}
 	return atoi(versionString);
+}
+
+char *getBracketContents(char *source, int index) {
+	long length = strlen(source);
+	char *string = malloc(length + 1);
+	char *contents = "";
+	strcpy(string, source);
+	int count = 0;
+	
+	for (int i = 0; i < length; i++) {
+		char c = source[i];
+		if (c == '[') {
+			if (count == index) {
+				contents = strtok(string + i, "]");
+				return contents + 1;
+			}
+			count++;
+		}
+	}
+	return contents;
+}
+
+int countEmptyBrackets(char *string) {
+	int count = 0;
+	for (int i = 0; i < strlen(string) - 1; i++) {
+		if (string[i] == '[' && string[i + 1] == ']') {
+			count++;
+		}
+	}
+	return count;
+}
+
+int countBrackets(char *string) {
+	int count = 0;
+	for (int i = 0; i < strlen(string); i++) {
+		if (string[i] == '[') {
+			count++;
+		}
+	}
+	return count;
 }

@@ -91,7 +91,7 @@ int countIntegers(int value) {
 
 DArray *queryDataBase(DataBase *dataBase, char *query, int version) {
 	DArray *results = 0;
-	if (query == 0) {
+	if (strlen(query) == 0) {
 		results = basicQuery(dataBase, " sysid:");
 	} else if (isAndQuery(query)) {
 		results = andQuery(dataBase, query);
@@ -533,7 +533,7 @@ void displaySelectDataBase(FILE *file, DArray *results, char *fields) {
 	for (int i = 0; i < sizeDArray(results); i++) {
 		Record *record = getDArray(results, i);
 		char *recordFields = getRecord(record);
-		if (fields == 0) {
+		if (strlen(fields) == 0) {
 			DArray *splitFields = separateRecords(getRecord(record));
 			Integer *vnVal = parseInteger(recordFields, "vn");
 			char *vnKeyValue = buildKeyValuePair("vn", getInteger(vnVal));
